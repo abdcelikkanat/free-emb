@@ -14,7 +14,7 @@ def get_neighbors(nb_list, n, l):
     if l = 1:
         pass
     else:
-        
+
 
 
     cdef int *visited = <int *> PyMem_Malloc(n * sizeof(int))

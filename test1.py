@@ -22,4 +22,5 @@ for node in g.nodes():
     for nb in nx.neighbors(g, node):
         nb_list[int(node)].append(int(nb))
 
+
 gn.get_neighbors(nb_list=nb_list, n=g.number_of_nodes(), l=3)

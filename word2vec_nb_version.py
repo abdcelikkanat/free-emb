@@ -29,6 +29,25 @@ global_word_count=None
 vocab_size=None
 table= None
 
+
+def get_nb_list(nxg):
+
+    nb_list = {node: [] for node in nxg.nodes()}
+
+    for node in nxg.nodes():
+        for nb in nx.neighbors(nxg, node):
+            if nb != node:
+                nb_list[node].append(nb)
+                for nb_nb in nx.neighbors(nxg, nb):
+                    nb_list[node].append(nb_nb)
+
+    return nb_list
+
+
+nxg = nx.read_gml("./datasets/citeseer_undirected.gml")
+num_of_iters = 100
+
+
 class VocabItem:
     def __init__(self, word):
         self.word = word
@@ -161,7 +180,7 @@ def sigmoid(z):
     elif z < -6:
         return 0.0
     else:
-        return 1 / (1 + np.exp(-z))
+        return 1 / (1 + math.exp(-z))
 
 
 def log_sigmoid(z):
@@ -173,25 +192,19 @@ def ben_initialize():
     global dim, vocab_size, syn0, syn1, table, vocab
 
     print('Initializing unigram table')
-    table = UnigramTable(vocab)
-    vocab_size = table.vocab_size
+    #table = UnigramTable(vocab)
+    #vocab_size = table.vocab_size
 
     # Init syn0 with random numbers from a uniform distribution on the interval [-0.5, 0.5]/dim
 
     tmp = np.random.uniform(low=-0.5 / dim, high=0.5 / dim, size=(vocab_size, dim))
-    tmp_cplx_part = 1.0j * np.random.uniform(low=-0.5 / dim, high=0.5 / dim, size=(vocab_size, dim))
-    tmp = tmp + tmp_cplx_part
-    #syn0 = np.ctypeslib.as_ctypes(tmp)
-    #syn0 = Array(syn0._type_, syn0, lock=False)
-    syn0 = tmp
+    syn0 = np.ctypeslib.as_ctypes(tmp)
+    syn0 = Array(syn0._type_, syn0, lock=False)
 
     # Init syn1 with zeros
     tmp = np.zeros(shape=(vocab_size, dim))
-    tmp_cplx_part = 1.0j * np.zeros(shape=(vocab_size, dim))
-    tmp = tmp + tmp_cplx_part
-    #syn1 = np.ctypeslib.as_ctypes(tmp)
-    #syn1 = Array(syn1._type_, syn1, lock=False)
-    syn1 = tmp
+    syn1 = np.ctypeslib.as_ctypes(tmp)
+    syn1 = Array(syn1._type_, syn1, lock=False)
 
     return (syn0, syn1)
 
@@ -199,145 +212,62 @@ def ben_initialize():
 def ben_train_process(pid):
     global table
     # Set fi to point to the right chunk of training file
-    start = vocab.bytes / num_processes * pid
-    end = vocab.bytes if pid == num_processes - 1 else vocab.bytes / num_processes * (pid + 1)
-    fi.seek(start)
+    #start = vocab.bytes / num_processes * pid
+    #end = vocab.bytes if pid == num_processes - 1 else vocab.bytes / num_processes * (pid + 1)
+    #fi.seek(start)
     # print 'Worker %d beginning training at %d, ending at %d' % (pid, start, end)
+
+    # Init net
+    syn0, syn1 = ben_initialize()
+
+    
+
+    with warnings.catch_warnings():
+        warnings.simplefilter('ignore', RuntimeWarning)
+        syn0 = np.ctypeslib.as_array(syn0)
+        syn1 = np.ctypeslib.as_array(syn1)
+
 
     alpha = starting_alpha
 
-    word_count = 0
-    last_word_count = 0
+    #word_count = 0
+    #last_word_count = 0
 
-    while fi.tell() < end:
-        line = fi.readline().strip()
-        # Skip blank lines
-        if not line:
-            continue
+    nodes = list(nxg.nodes())
 
-        # Init sent, a list of indices of words in line
-        sent = vocab.indices(['<bol>'] + line.split() + ['<eol>'])
+    nb_list = get_nb_list(nxg)
 
-        for sent_pos, token in enumerate(sent):
-            if word_count % 10000 == 0:
-                global_word_count.value += (word_count - last_word_count)
-                last_word_count = word_count
+    for iter in range(num_of_iters):
+        for node in nodes:
 
-                # Recalculate alpha
-                alpha = starting_alpha * (1 - float(global_word_count.value) / vocab.word_count)
-                if alpha < starting_alpha * 0.0001: alpha = starting_alpha * 0.0001
+            neu1e = np.zeros(dim)
 
-                # Print progress info
-                sys.stdout.write("\rAlpha: %f Progress: %d of %d (%.2f%%)" %
-                                 (alpha, global_word_count.value, vocab.word_count,
-                                  float(global_word_count.value) / vocab.word_count * 100))
-                sys.stdout.flush()
+            target_list = []
+            label_list = []
+            for nb in nb_list[node]:
+                target_list.append(np.random.choice(nodes, size=neg)[0])
+                for _ in range(neg):
+                    label_list.append(0)
 
-            # Randomize window size, where win is the max window size
-            current_win = np.random.randint(low=1, high=win + 1)
-            context_start = max(sent_pos - current_win, 0)
-            context_end = min(sent_pos + current_win + 1, len(sent))
-            context = sent[context_start:sent_pos] + sent[sent_pos + 1:context_end]  # Turn into an iterator?
+                target_list.append(nb)
+                label_list.append(1)
 
-            # CBOW
-            if cbow:
-                pass
+            context_word = int(node)
+            for target, label in zip(target_list, label_list):
+                z = np.dot(syn0[context_word], syn1[int(target)])
+                p = sigmoid(z)
+                g = alpha * (label - p)
+                neu1e += g * syn1[int(target)]  # Error to backpropagate to syn0
+                syn1[int(target)] += g * syn0[context_word]  # Update syn1
 
-            # Skip-gram
-            else:
-                """
-                for context_word in context:
-                    # Init neu1e with zeros
-                    neu1e = np.zeros(dim)
+            # Update syn0
+            syn0[context_word] += neu1e
 
-                    # Compute neu1e and update syn1
-                    if neg > 0:
-                        classifiers = [(token, 1)] + [(target, 0) for target in table.sample(neg)]
-                    else:
-                        classifiers = zip(vocab[token].path, vocab[token].code)
-                    for target, label in classifiers:
-                        z = np.dot(syn0[context_word], syn1[target])
-                        p = sigmoid(z)
-                        g = alpha * (label - p)
-                        neu1e += g * syn1[target]              # Error to backpropagate to syn0
-                        syn1[target] += g * syn0[context_word] # Update syn1
 
-                    # Update syn0
-                    syn0[context_word] += neu1e
-                """
+        # Recalculate alpha
+        alpha = starting_alpha * (1 - float(global_word_count.value) / vocab.word_count)
 
-                """
 
-                for context_word in context:
-                    # Init neule with zeros
-                    neu1e = np.zeros(dim)
-
-                    # Compute neu1e and update syn1
-                    if neg > 0:
-                        classifiers = [(token, 1)] + [(target, 0) for target in table.sample(neg)]
-                    else:
-                        classifiers = zip(vocab[token].path, vocab[token].code)
-                    for target, label in classifiers:
-                        diff = syn0[context_word] - syn1[target]
-                        neg_term = 1.0 / (np.exp(np.dot(diff, diff)/2.0) - 1.0)
-                        if label == 1:
-                            g = diff
-                        else:
-                            g = -diff * neg_term
-                        g = alpha * g
-                        neu1e += -g
-                        syn1[target] += g
-
-                    # Update syn0
-                    syn0[context_word] += neu1e
-                """
-
-                """ 
-                nbnb = generate_nn_matrix(vocab)
-                for context_word in context:
-                    # Init neule with zeros
-                    neu1e = np.zeros(dim)
-
-                    # Compute neu1e and update syn1
-                    if neg > 0:
-                        classifiers = [(token, 1)] + [(target, 0) for target in table.sample(neg)]
-                    else:
-                        classifiers = zip(vocab[token].path, vocab[token].code)
-                    for target, label in classifiers:
-                        # print(vocab.indices([context_word]))
-                        prod = np.dot(syn0[context_word], syn1[target]) + 1e-6
-                        g = 1.0 - (float(nbnb[vocab.indices([context_word])[0], vocab.indices([target])[0]]) / prod)
-                        g = alpha * g
-                        neu1e += g * syn1[target]
-                        syn1[target] += g * syn0[context_word]
-
-                    # Update syn0
-                    syn0[context_word] += neu1e
-                """
-
-                for context_word in context:
-                    # Init neu1e with zeros
-                    neu1e = np.zeros(dim, dtype=np.complex)
-
-                    # Compute neu1e and update syn1
-                    if neg > 0:
-                        classifiers = [(token, 1)] + [(target, 0) for target in table.sample(neg)]
-                    else:
-                        classifiers = zip(vocab[token].path, vocab[token].code)
-                    for target, label in classifiers:
-                        z = np.dot(syn0[context_word]-syn1[target], syn0[context_word]-syn1[target])
-                        p = sigmoid(z)
-                        g = alpha * (label - p)
-                        neu1e += g * syn1[target]  # Error to backpropagate to syn0
-                        syn1[target] += g * syn0[context_word]  # Update syn1
-
-                    # Update syn0
-                    syn0[context_word] += neu1e
-
-            word_count += 1
-
-    # Print progress info
-    global_word_count.value += (word_count - last_word_count)
     sys.stdout.write("\rAlpha: %f Progress: %d of %d (%.2f%%)" %
                      (alpha, global_word_count.value, vocab.word_count,
                       float(global_word_count.value) / vocab.word_count * 100))
@@ -351,7 +281,7 @@ def ben_save(vocab, syn0, fo):
 
     fo = open(fo, 'w')
     fo.write('%d %d\n' % (len(syn0)-3, dim))
-    for token, vector in zip(vocab, np.conjugate(syn0)):
+    for token, vector in zip(vocab, syn0):
         word = token.word
         if word not in ['<bol>', '<eol>', '<unk>']:
             vector_str = ' '.join([str(s) for s in vector])
@@ -377,10 +307,12 @@ def ben_train():
 
 
     # Read train file to init vocab
-    vocab = Vocab(fi, min_count)
+    #vocab = Vocab(fi, min_count)
 
-    # Init net
-    syn0, syn1 = ben_initialize()
+    vocab_size = nxg.number_of_nodes()
+
+
+
 
     global_word_count = Value('i', 0)
     if neg > 0:
@@ -391,10 +323,11 @@ def ben_train():
 
     # Begin training using num_processes workers
     t0 = time.time()
-    pool = Pool(processes=num_processes, initializer=__init_process,
-                initargs=(vocab, syn0, syn1, table, cbow, neg, dim, alpha,
-                          win, num_processes, global_word_count, fi))
-    pool.map(ben_train_process, range(num_processes))
+    ben_train_process(0)
+    #pool = Pool(processes=num_processes, initializer=__init_process,
+    #            initargs=(vocab, syn0, syn1, table, cbow, neg, dim, alpha,
+    #                      win, num_processes, global_word_count, fi))
+    #pool.map(ben_train_process, range(num_processes))
     t1 = time.time()
 
     print('Completed training. Training took', (t1 - t0) / 60, 'minutes')
@@ -406,7 +339,7 @@ def ben_train():
 if __name__ == '__main__':
 
     argsfi = "./inputs/citeseer_node2vec.corpus"
-    argsfo = "./outputs/citeseer_node2vec_complex.embedding"
+    argsfo = "./outputs/citeseer_node2vec.embedding"
     argscbow = 0
     argsneg = 5
     argsdim = 128

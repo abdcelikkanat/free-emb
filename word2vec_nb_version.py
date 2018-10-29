@@ -423,6 +423,6 @@ if __name__ == '__main__':
     #train(argsfi, argsfo, bool(argscbow), argsneg, argsdim, argsalpha, argswin,
     #      argsmin_count, argsnum_processes, bool(argsbinary))
 
-    num_of_iters = 100
+    num_of_iters = 1000
 
     ben_train()

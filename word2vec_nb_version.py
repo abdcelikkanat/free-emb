@@ -28,7 +28,8 @@ table=None
 global_word_count=None
 vocab_size=None
 table= None
-
+num_of_iters = None
+nxg = None
 
 def get_nb_list(nxg):
 
@@ -39,13 +40,14 @@ def get_nb_list(nxg):
             if nb != node:
                 nb_list[node].append(nb)
                 for nb_nb in nx.neighbors(nxg, nb):
-                    nb_list[node].append(nb_nb)
+                    if nb_nb != node:
+                        nb_list[node].append(nb_nb)
 
     return nb_list
 
 
-nxg = nx.read_gml("./datasets/citeseer_undirected.gml")
-num_of_iters = 100
+
+
 
 
 class VocabItem:
@@ -210,17 +212,18 @@ def ben_initialize():
 
 
 def ben_train_process(pid):
-    global table
+    global table, num_of_iters
     # Set fi to point to the right chunk of training file
     #start = vocab.bytes / num_processes * pid
     #end = vocab.bytes if pid == num_processes - 1 else vocab.bytes / num_processes * (pid + 1)
     #fi.seek(start)
     # print 'Worker %d beginning training at %d, ending at %d' % (pid, start, end)
 
-    # Init net
-    syn0, syn1 = ben_initialize()
+    global syn0, syn1
 
-    
+
+
+
 
     with warnings.catch_warnings():
         warnings.simplefilter('ignore', RuntimeWarning)
@@ -240,17 +243,28 @@ def ben_train_process(pid):
     for iter in range(num_of_iters):
         for node in nodes:
 
-            neu1e = np.zeros(dim)
+
 
             target_list = []
             label_list = []
-            for nb in nb_list[node]:
-                target_list.append(np.random.choice(nodes, size=neg)[0])
-                for _ in range(neg):
-                    label_list.append(0)
 
-                target_list.append(nb)
+            neg_list = [v for v in nxg.nodes() if v not in nb_list[node]]
+            neg_list = np.random.choice(neg_list, size=neg)[0]
+
+            for neg_sample in neg_list:
+                target_list.append(neg_sample)
+                label_list.append(0)
+
+            for pos_sample in nb_list[node]:
+                target_list.append(pos_sample)
                 label_list.append(1)
+
+            #perm = np.random.permutation(len(target_list))
+
+            #target_list = np.asarray(target_list)[perm]
+            #label_list = np.asarray(label_list)[perm]
+
+            neu1e = np.zeros(dim)
 
             context_word = int(node)
             for target, label in zip(target_list, label_list):
@@ -265,14 +279,44 @@ def ben_train_process(pid):
 
 
         # Recalculate alpha
-        alpha = starting_alpha * (1 - float(global_word_count.value) / vocab.word_count)
+        #alpha = starting_alpha * (1 - float(global_word_count.value) / vocab.word_count)
+        print("Iter: {} alpha: {}".format(iter, alpha))
+        #alpha = alpha / (1 + vocab_size * 1.0)
+        alpha = 0.002
+        #if alpha < starting_alpha * 0.001:  alpha = starting_alpha * 0.001
+
+        if iter % 10 == 0:
+            neg_log_error = 0.0
+            for node in nodes:
+                node_err = 0
+                for nb in nb_list[node]:
+                    z = np.dot(syn0[int(node)], syn1[int(nb)])
+                    p = sigmoid(z)
+                    node_err = np.log(p)
+
+                    neg_log_error += - node_err
+
+                neg_list = [v for v in nxg.nodes() if v not in nb_list[node]]
+                neg_list = np.random.choice(neg_list, size=neg)[0]
+
+                """
+                for neg_node in neg_list:
+                    z = np.dot(syn0[int(node)], syn1[int(neg_node)])
+                    p = 1.0 - sigmoid(z)
+                    if p < 0.000001:
+                        p = 0.000001
+                    node_err = np.log(np.exp(p))
+
+                    neg_log_error += - node_err
+                """
+            print("Negative log error: {}".format(neg_log_error))
 
 
-    sys.stdout.write("\rAlpha: %f Progress: %d of %d (%.2f%%)" %
-                     (alpha, global_word_count.value, vocab.word_count,
-                      float(global_word_count.value) / vocab.word_count * 100))
+    #sys.stdout.write("\rAlpha: %f Progress: %d of %d (%.2f%%)" %
+    #                 (alpha, global_word_count.value, vocab.word_count,
+    #                  float(global_word_count.value) / vocab.word_count * 100))
     sys.stdout.flush()
-    fi.close()
+    #fi.close()
 
 
 def ben_save(vocab, syn0, fo):
@@ -280,9 +324,9 @@ def ben_save(vocab, syn0, fo):
     dim = len(syn0[0])
 
     fo = open(fo, 'w')
-    fo.write('%d %d\n' % (len(syn0)-3, dim))
-    for token, vector in zip(vocab, syn0):
-        word = token.word
+    fo.write('%d %d\n' % (len(syn0), dim))
+    for token, vector in zip(nxg.nodes(), syn0):
+        word = str(token)
         if word not in ['<bol>', '<eol>', '<unk>']:
             vector_str = ' '.join([str(s) for s in vector])
             fo.write('%s %s\n' % (word, vector_str))
@@ -305,14 +349,17 @@ def __init_process(*args):
 def ben_train():
     global fi, fo, cbow, neg, dim, alpha, win, min_count, num_processes, binary, vocab_size, table, vocab
 
+    global nxg
+
+    global syn0, syn1
 
     # Read train file to init vocab
     #vocab = Vocab(fi, min_count)
 
     vocab_size = nxg.number_of_nodes()
 
-
-
+    # Init net
+    syn0, syn1 = ben_initialize()
 
     global_word_count = Value('i', 0)
     if neg > 0:
@@ -340,6 +387,10 @@ if __name__ == '__main__':
 
     argsfi = "./inputs/citeseer_node2vec.corpus"
     argsfo = "./outputs/citeseer_node2vec.embedding"
+
+    nxg = nx.read_gml("./datasets/citeseer_undirected.gml")
+    #nxg = nx.read_gml("./datasets/karate.gml")
+
     argscbow = 0
     argsneg = 5
     argsdim = 128
@@ -348,6 +399,7 @@ if __name__ == '__main__':
     argsmin_count = 0
     argsnum_processes = 1
     argsbinary = 0
+
 
 
     fi = argsfi
@@ -359,7 +411,7 @@ if __name__ == '__main__':
     alpha = starting_alpha
     win = 10
     min_count = 0
-    num_processes = 3
+    num_processes = 1
     #binary = None
     #vocab = None
     #syn0 = None
@@ -371,5 +423,6 @@ if __name__ == '__main__':
     #train(argsfi, argsfo, bool(argscbow), argsneg, argsdim, argsalpha, argswin,
     #      argsmin_count, argsnum_processes, bool(argsbinary))
 
+    num_of_iters = 100
 
     ben_train()

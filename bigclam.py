@@ -44,6 +44,10 @@ class myBigclam:
 
         partial_sum = self._current_f_sum - self._F[u, :] - v_f_sum
 
+        ########
+        partial_sum += -self._F[u, :]
+        #########
+
         return grad - partial_sum
 
     def _get_comm_assignment(self, epsilon=1e-8):
@@ -71,34 +75,35 @@ class myBigclam:
             for u in self._nodelist:
                 temp = alpha * self.compute_gradient(u)
                 self._F[u, :] += temp
-                self._current_f_sum += temp
+                #self._current_f_sum += temp
 
+                self._current_f_sum = np.sum(self._F, 0)
+
+                """
                 for c in range(self._num_of_comm):
                     if self._F[u, c] < 0.0:
                         self._current_f_sum[c] -= temp[c]
                         self._F[u, c] = 0.0
+                """
 
 
             log_score = 0.0
-            for u in self._nodelist:
-                for v in self._nodelist:
-                    if u <= v:
+            for u in range(self._num_of_nodes):
+                for v in range(u, self._num_of_nodes):
 
-                        if v in self._edgelist[u]:
+                    if v in self._edgelist[u]:
 
-                            term = 1.0 - np.exp(-np.dot(self._F[u, :], self._F[v, :]))
-                            if term < 1e-15:
-                                log_score += -15
-                            else:
-                                log_score += np.log(term)
-
+                        term = 1.0 - np.exp(-np.dot(self._F[u, :], self._F[v, :]))
+                        if term < 1e-15:
+                            log_score += -15
                         else:
+                            log_score += np.log(term)
 
-                            log_score += - np.dot(self._F[u, :], self._F[v, :])
+                    else:
 
-            for c in range(self._num_of_comm):
-                assert np.abs(np.sum(self._F[:, c]) - self._current_f_sum[c]) < 0.1, \
-                    "Error {} {}".format(np.sum(self._F[:, c]), self._current_f_sum[c])
+                        log_score += - np.dot(self._F[u, :], self._F[v, :])
+
+
             print("Iter: {} Total log score: {}".format(iter, log_score))
 
         #epsilon = (2.0 * self._graph.number_of_edges()) / ( self._num_of_nodes * (self._num_of_nodes-1) )
@@ -139,7 +144,7 @@ class myBigclam:
 
 path = "./datasets/karate.gml"
 bg = myBigclam(nxg_path=path, num_of_comm=2)
-n2c, c2n = bg.run(starting_alpha=0.00001, epsilon=1e-8, num_of_iterations=1000)
+n2c, c2n = bg.run(starting_alpha=0.001, epsilon=1e-8, num_of_iterations=1000)
 print(n2c)
 print(c2n)
 

@@ -1,6 +1,55 @@
 import numpy as np
 import networkx as nx
 import matplotlib.pyplot as plt
+import math
+import time
+
+uni = None
+
+class Vocab:
+
+    def __init__(self, N, freq):
+        self.nodes = [i for i in range(N)]
+        self.freq = freq
+
+    def __getitem__(self, i):
+        return self.nodes[i]
+
+    def __len__(self):
+        return len(self.nodes)
+
+    def __iter__(self):
+        return iter(self.nodes)
+
+class UnigramTable:
+    """
+    A list of indices of tokens in the vocab following a power law distribution,
+    used to draw negative samples.
+    """
+
+    def __init__(self, vocab, power = 0.75):
+        self.vocab_size = len(vocab)
+
+        norm = sum([math.pow(vocab.freq[t], power) for t in vocab])  # Normalizing constant
+
+        # table_size = 1e8 # Length of the unigram table
+        table_size = np.uint32(1e8)  # Length of the unigram table
+        table = np.zeros(table_size, dtype=np.uint32)
+
+        print('Filling unigram table')
+        p = 0  # Cumulative probability
+        i = 0
+        for j, unigram in enumerate(vocab):
+            p += float(math.pow(vocab.freq[unigram], power)) / norm
+            while i < table_size and float(i) / table_size < p:
+                table[i] = j
+                i += 1
+        self.table = table
+
+    def sample(self, count):
+        indices = np.random.randint(low=0, high=len(self.table), size=count)
+        return [self.table[i] for i in indices]
+
 
 class myBigclam:
     def __init__(self, nxg=None, dim_size=2):
@@ -12,13 +61,14 @@ class myBigclam:
         self._current_f_sum = 0.0
         self._dim_size = dim_size
         self._nb_list = []
+        self.neg_count = 0
 
         #self._read_gml(nxg_path)
         if nxg is not None:
             self._graph = nxg
             self._num_of_nodes = self._graph.number_of_nodes()
             self._nx2list()
-            self._get_nb_strategy1()
+
 
     def _read_gml(self, nxg_path):
         self._graph = nx.read_gml(nxg_path)
@@ -44,6 +94,18 @@ class myBigclam:
             for nb in self._edgelist[v]:
                 if nb != v:
                     self._nb_list[v].append(nb)
+
+        #self._nb_list = np.unique(self._nb_list)
+
+    def _get_nb_strategy2(self):
+        self._nb_list = []
+
+        for v in range(self._num_of_nodes):
+            self._nb_list.append([])
+
+            for nb in self._edgelist[v]:
+                if nb != v:
+                    self._nb_list[v].append(nb)
                     for nb_nb in self._edgelist[nb]:
                         if nb_nb != v:
                             self._nb_list[v].append(nb_nb)
@@ -51,9 +113,47 @@ class myBigclam:
         #self._nb_list = np.unique(self._nb_list)
 
 
+    def _get_nb_strategy3(self):
+        self._nb_list = []
+
+        for v in range(self._num_of_nodes):
+            self._nb_list.append([])
+
+            for nb in self._edgelist[v]:
+                if nb != v:
+                    self._nb_list[v].append(nb)
+                    for nb_nb in self._edgelist[nb]:
+                        if nb_nb != v:
+                            self._nb_list[v].append(nb_nb)
+                            for nb_nb_nb in self._edgelist[nb_nb]:
+                                if nb_nb_nb != v:
+                                    self._nb_list[v].append(nb_nb_nb)
+
+    def _get_nb_strategy2_itself(self):
+        self._nb_list = []
+
+        for v in range(self._num_of_nodes):
+            self._nb_list.append([])
+            for nb in self._edgelist[v]:
+                self._nb_list[v].append(nb)
+                for nb_nb in self._edgelist[nb]:
+                    self._nb_list[v].append(nb_nb)
+
+        #self._nb_list = np.unique(self._nb_list)
+
+
+    def compute_table(self):
+        pass
+
+
     def sigmoid(self, z):
 
-        return 1.0 / ( 1.0 + np.exp(-z) )
+        if z > 6:
+            return 1.0
+        elif z < -6:
+            return 0.0
+        else:
+            return 1 / (1 + math.exp(-z))
 
     def compute_gradient(self, v):
 
@@ -71,6 +171,35 @@ class myBigclam:
 
         return grad
 
+    def compute_gradient_ns(self, v, ns=5):
+        global uni
+
+        if len(self._nb_list[v]) == 0:
+            return 0.0
+
+        grad = 0.0
+
+        neg_choices = [r for r in range(self._num_of_nodes) if r not in self._nb_list]
+        #neg_samples = np.random.choice(neg_choices, size=len(self._nb_list[v])*ns, replace=True)
+        neg_samples = uni.sample(count=len(self._nb_list[v])*ns)
+
+        for n in neg_samples:
+            if n in self._nb_list[v]:
+                self.neg_count += 1
+
+        target = np.hstack((self._nb_list[v], neg_samples))
+        #np.random.shuffle(target)
+
+        for u in target:
+            label = 0.0
+            if u in self._nb_list[v]:
+                label = 1.0
+
+            z = np.dot(self._F[v, :], self._F[u, :])
+            grad += ( label - self.sigmoid(z) ) * self._F[u, :]
+
+        return grad
+
     def save_f(self, filename):
 
         with open(filename, 'w') as f:
@@ -78,18 +207,28 @@ class myBigclam:
             for v in range(self._num_of_nodes):
                 f.write("{} {}\n".format(str(v), " ".join([str(value) for value in F[v, :]])))
 
-
     def run(self, starting_alpha, num_of_iterations):
+        global uni
 
         self._F = np.random.rand(self._num_of_nodes, self._dim_size)
         self._current_f_sum = np.sum(self._F, 0)
+
+        self._get_nb_strategy3()
+
+        vocab = Vocab(self._num_of_nodes, freq=[1.0 for i in range(self._num_of_nodes)])
+        uni = UnigramTable(vocab=vocab)
+
+        for i in range(self._num_of_nodes):
+            for j in self._edgelist[i]:
+                pass #print("Haha", j)
+
 
         alpha = starting_alpha
 
         for iter in range(num_of_iterations):
 
             for v in range(self._num_of_nodes):
-                temp = alpha * self.compute_gradient(v)
+                temp = alpha * self.compute_gradient_ns(v, ns=1)
                 self._F[v, :] += temp
 
 
@@ -109,6 +248,8 @@ class myBigclam:
                 print("Iter: {} Total log score: {}".format(iter, log_score))
 
         #epsilon = (2.0 * self._graph.number_of_edges()) / ( self._num_of_nodes * (self._num_of_nodes-1) )
+
+        print("Total neg: {}".format(self.neg_count))
 
         return self._F
 
@@ -130,9 +271,11 @@ g = nx.read_gml(path)
 #nx.draw(g)
 #plt.show()
 
-
+start_time = time.time()
 bg = myBigclam(nxg=g, dim_size=128)
-F = bg.run(starting_alpha=0.001, num_of_iterations=1000)
+F = bg.run(starting_alpha=0.01, num_of_iterations=1)
+print("Running time: {}".format(round(time.time() - start_time, 4)))
+
 """
 print(F)
 M = np.zeros(shape=(g.number_of_nodes(), g.number_of_nodes()), dtype=np.float)
@@ -143,7 +286,8 @@ for i in range(M.shape[0]):
 print(M)
 
 bg.plot(x=F)
-
 """
 
-bg.save_f(filename="./outputs/citeseer_test.embedding")
+
+
+#bg.save_f(filename="./outputs/citeseer_test.embedding")

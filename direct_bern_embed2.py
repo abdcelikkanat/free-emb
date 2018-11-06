@@ -57,7 +57,9 @@ class myBigclam:
         self._graph = None
         self._num_of_nodes = None
         self._edgelist = None
-        self._F = None
+        #self._F = None
+        self._F0 = None
+        self._F1 = None
         self._current_f_sum = 0.0
         self._dim_size = dim_size
         self._nb_list = []
@@ -195,7 +197,7 @@ class myBigclam:
             return 0.0
         else:
             return 1 / (1 + math.exp(-z))
-
+    """
     def compute_gradient(self, v):
 
         grad = 0.0
@@ -224,11 +226,11 @@ class myBigclam:
         #neg_samples = np.random.choice(neg_choices, size=len(self._nb_list[v])*ns, replace=True)
         neg_samples = uni.sample(count=len(self._nb_list[v])*ns)
 
-        """
-        for n in neg_samples:
-            if n in self._nb_list[v]:
-                self.neg_count += 1
-        """
+        
+        #for n in neg_samples:
+        #    if n in self._nb_list[v]:
+        #        self.neg_count += 1
+        
         #target = np.hstack((self._nb_list[v], neg_samples))
         #np.random.shuffle(target)
 
@@ -237,30 +239,29 @@ class myBigclam:
             grad += ( label - self.sigmoid(z) ) * self._F[u, :]
 
         return grad
-
+    """
     def save_f(self, filename):
 
         with open(filename, 'w') as f:
             f.write("{} {}\n".format(self._num_of_nodes, self._dim_size))
             for v in range(self._num_of_nodes):
-                f.write("{} {}\n".format(str(v), " ".join([str(value) for value in self._F[v, :]])))
+                f.write("{} {}\n".format(str(v), " ".join([str(value) for value in self._F0[v, :]])))
 
     def run(self, starting_alpha, num_of_iterations):
         global uni
 
-        self._F = np.random.rand(self._num_of_nodes, self._dim_size)
-        self._F = np.random.uniform(low=-0.5 / self._dim_size, high=0.5 / self._dim_size,
+        #self._F = np.random.rand(self._num_of_nodes, self._dim_size)
+        self._F0 = np.random.uniform(low=-0.5 / self._dim_size, high=0.5 / self._dim_size,
                                     size=(self._num_of_nodes, self._dim_size))
-        self._current_f_sum = np.sum(self._F, 0)
 
-        self._get_nb_strategy4()
+        self._F1 = np.zeros(shape=(self._num_of_nodes, self._dim_size), dtype=np.float)
+        #self._current_f_sum = np.sum(self._F, 0)
+
+        self._get_nb_strategy3()
 
         vocab = Vocab(self._num_of_nodes, freq=[1.0 for i in range(self._num_of_nodes)])
         uni = UnigramTable(vocab=vocab)
 
-        for i in range(self._num_of_nodes):
-            for j in self._edgelist[i]:
-                pass #print("Haha", j)
 
 
         alpha = starting_alpha
@@ -270,7 +271,7 @@ class myBigclam:
 
             if ( iter+1 ) % 100 == 0:
                 self.save_f(filename="./outputs/citeseer_test_" + str(iter+1) + ".embedding")
-
+            """
             if iter % 10 == 0:
                 log_score = 0.0
                 for v in range(self._num_of_nodes):
@@ -283,16 +284,34 @@ class myBigclam:
                             log_score += np.log( 1.0 - sig )
 
                 print("Iter: {} Total log score: {}".format(iter, log_score))
-
+            """
             for v in range(self._num_of_nodes):
-                temp = alpha * self.compute_gradient_ns(v, ns=5)
-                self._F[v, :] += temp
+
+                if len(self._nb_list[v]) == 0:
+                    return 0.0
+
+                neu1e = np.zeros(self._dim_size)
+
+                # neg_choices = [r for r in range(self._num_of_nodes) if r not in self._nb_list]
+                # neg_samples = np.random.choice(neg_choices, size=len(self._nb_list[v])*ns, replace=True)
+                ns = 5
+                neg_samples = uni.sample(count=len(self._nb_list[v]) * ns)
+
+                for u, label in zip(self._nb_list[v] + neg_samples,
+                                    [1.0] * len(self._nb_list[v]) + [0.0] * len(neg_samples)):
+                    z = np.dot(self._F0[v, :], self._F1[u, :])
+                    p = self.sigmoid(z)
+                    g = alpha * (label - p)
+                    neu1e += g * self._F1[u, :]
+                    self._F1[u, :] += g * self._F0[v, :]
+
+                self._F0[v, :] += neu1e
 
         #epsilon = (2.0 * self._graph.number_of_edges()) / ( self._num_of_nodes * (self._num_of_nodes-1) )
 
         print("Total neg: {}".format(self.neg_count))
 
-        return self._F
+        return self._F0
 
     def plot(self, x):
 

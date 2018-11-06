@@ -130,6 +130,9 @@ class myBigclam:
                             for nb_nb_nb in self._edgelist[nb_nb]:
                                 if nb_nb_nb != v:
                                     self._nb_list[v].append(nb_nb_nb)
+                else:
+                    if len(self._edgelist[v]) == 1:
+                        self._nb_list[v].append(v)
 
     def _get_nb_strategy4(self):
         self._nb_list = []
@@ -149,6 +152,9 @@ class myBigclam:
                                     for nb_nb_nb_nb in self._edgelist[nb_nb_nb]:
                                         if nb_nb_nb_nb != v:
                                             self._nb_list[v].append(nb_nb_nb_nb)
+                else:
+                    if len(self._edgelist[v]) == 1:
+                        self._nb_list[v].append(v)
 
     def _get_nb_strategy5(self):
         self._nb_list = []
@@ -171,6 +177,9 @@ class myBigclam:
                                             for nb_nb_nb_nb_nb in self._edgelist[nb_nb_nb_nb]:
                                                 if nb_nb_nb_nb_nb != v:
                                                     self._nb_list[v].append(nb_nb_nb_nb_nb)
+                else:
+                    if len(self._edgelist[v]) == 1:
+                        self._nb_list[v].append(v)
 
     def _get_nb_strategy2_itself(self):
         self._nb_list = []
@@ -257,7 +266,7 @@ class myBigclam:
         self._F1 = np.zeros(shape=(self._num_of_nodes, self._dim_size), dtype=np.float)
         #self._current_f_sum = np.sum(self._F, 0)
 
-        self._get_nb_strategy3()
+        self._get_nb_strategy2()
 
         vocab = Vocab(self._num_of_nodes, freq=[1.0 for i in range(self._num_of_nodes)])
         uni = UnigramTable(vocab=vocab)
@@ -270,7 +279,7 @@ class myBigclam:
             print("Iter: {}".format(iter))
 
             if ( iter+1 ) % 100 == 0:
-                self.save_f(filename="./outputs/citeseer_test_" + str(iter+1) + ".embedding")
+                self.save_f(filename="./outputs/citeseer_st2_" + str(iter+1) + ".embedding")
             """
             if iter % 10 == 0:
                 log_score = 0.0
@@ -287,8 +296,8 @@ class myBigclam:
             """
             for v in range(self._num_of_nodes):
 
-                if len(self._nb_list[v]) == 0:
-                    return 0.0
+                #if len(self._nb_list[v]) == 0:
+                #    return 0.0
 
                 neu1e = np.zeros(self._dim_size)
 
@@ -333,7 +342,7 @@ g = nx.read_gml(path)
 
 start_time = time.time()
 bg = myBigclam(nxg=g, dim_size=128)
-F = bg.run(starting_alpha=0.0005, num_of_iterations=300)
+F = bg.run(starting_alpha=0.012, num_of_iterations=500)
 print("Running time: {}".format(round(time.time() - start_time, 4)))
 
 """

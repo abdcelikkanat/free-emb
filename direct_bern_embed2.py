@@ -268,7 +268,7 @@ class myBigclam:
 
         self._get_nb_strategy2()
 
-        vocab = Vocab(self._num_of_nodes, freq=[1.0 for i in range(self._num_of_nodes)])
+        vocab = Vocab(self._num_of_nodes, freq=[float(len(self._edgelist[i])) for i in range(self._num_of_nodes)])
         uni = UnigramTable(vocab=vocab)
 
 
@@ -342,7 +342,7 @@ g = nx.read_gml(path)
 
 start_time = time.time()
 bg = myBigclam(nxg=g, dim_size=128)
-F = bg.run(starting_alpha=0.012, num_of_iterations=500)
+F = bg.run(starting_alpha=0.05, num_of_iterations=1000)
 print("Running time: {}".format(round(time.time() - start_time, 4)))
 
 """
@@ -360,3 +360,7 @@ bg.plot(x=F)
 
 
 bg.save_f(filename="./outputs/citeseer_test.embedding")
+
+import sklearn as sk
+
+sk.cluster.spectral_clustering()

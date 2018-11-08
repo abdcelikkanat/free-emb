@@ -279,7 +279,7 @@ class myBigclam:
             print("Iter: {}".format(iter))
 
             if ( iter+1 ) % 100 == 0:
-                self.save_f(filename="./outputs/citeseer_st2_" + str(iter+1) + ".embedding")
+                self.save_f(filename="./outputs/citeseer_st3_" + str(iter+1) + ".embedding")
             """
             if iter % 10 == 0:
                 log_score = 0.0
@@ -294,7 +294,8 @@ class myBigclam:
 
                 print("Iter: {} Total log score: {}".format(iter, log_score))
             """
-            for v in range(self._num_of_nodes):
+            perm = np.random.permutation(self._num_of_nodes)
+            for v in perm:
 
                 #if len(self._nb_list[v]) == 0:
                 #    return 0.0
@@ -342,7 +343,7 @@ g = nx.read_gml(path)
 
 start_time = time.time()
 bg = myBigclam(nxg=g, dim_size=128)
-F = bg.run(starting_alpha=0.05, num_of_iterations=1000)
+F = bg.run(starting_alpha=0.001, num_of_iterations=10000)
 print("Running time: {}".format(round(time.time() - start_time, 4)))
 
 """
@@ -361,6 +362,4 @@ bg.plot(x=F)
 
 bg.save_f(filename="./outputs/citeseer_test.embedding")
 
-import sklearn as sk
 
-sk.cluster.spectral_clustering()

@@ -114,6 +114,38 @@ class myBigclam:
 
         #self._nb_list = np.unique(self._nb_list)
 
+    def _get_nb_strategy2_v2(self):
+        self._nb_list = []
+
+        for v in range(self._num_of_nodes):
+            self._nb_list.append([])
+
+            for nb in self._edgelist[v]:
+                if nb != v:
+                    self._nb_list[v].append(nb)
+                    for nb_nb in self._edgelist[nb]:
+                        if nb_nb != v:
+                            self._nb_list[v].append(nb_nb)
+
+		    self._nb_list[v].append(nb) # append one more time
+
+    def _get_nb_strategy2_v3(self):
+        self._nb_list = []
+
+        for v in range(self._num_of_nodes):
+            self._nb_list.append([])
+
+            for nb in self._edgelist[v]:
+                if nb != v:
+                    self._nb_list[v].append(nb)
+                    for nb_nb in self._edgelist[nb]:
+                        if nb_nb != v and len(self._edgelist[v]) < 5:
+                            self._nb_list[v].append(nb_nb)
+		    self._nb_list[v].append(nb) # append one more time
+		    #self._nb_list[v].append(nb)
+
+	    perm = np.random.permutation(len(self._nb_list[v]))
+	    self._nb_list[v] = [self._nb_list[v][p] for p in perm]
 
     def _get_nb_strategy3(self):
         self._nb_list = []
@@ -256,7 +288,7 @@ class myBigclam:
             for v in range(self._num_of_nodes):
                 f.write("{} {}\n".format(str(v), " ".join([str(value) for value in self._F0[v, :]])))
 
-    def run(self, starting_alpha, num_of_iterations):
+    def run(self, starting_alpha, num_of_iterations,datasetname):
         global uni
 
         #self._F = np.random.rand(self._num_of_nodes, self._dim_size)
@@ -266,7 +298,7 @@ class myBigclam:
         self._F1 = np.zeros(shape=(self._num_of_nodes, self._dim_size), dtype=np.float)
         #self._current_f_sum = np.sum(self._F, 0)
 
-        self._get_nb_strategy2()
+        self._get_nb_strategy2_v3()
 
         vocab = Vocab(self._num_of_nodes, freq=[float(len(self._edgelist[i])) for i in range(self._num_of_nodes)])
         uni = UnigramTable(vocab=vocab)
@@ -279,7 +311,7 @@ class myBigclam:
             print("Iter: {}".format(iter))
 
             if ( iter+1 ) % 100 == 0:
-                self.save_f(filename="./outputs/citeseer_st3_" + str(iter+1) + ".embedding")
+                self.save_f(filename="./outputs/"+datasetname+"_st3__nb2_v3_" + str(iter+1) + ".embedding")
             """
             if iter % 10 == 0:
                 log_score = 0.0
@@ -331,7 +363,9 @@ class myBigclam:
 
         plt.show()
 
-path = "./datasets/citeseer_undirected.gml"
+dataset = "blogcatalog"
+#path = "./datasets/"+dataset+"_undirected.gml"
+path = "./datasets/"+dataset+".gml"
 #path = "./datasets/karate.gml"
 g = nx.read_gml(path)
 
@@ -343,7 +377,7 @@ g = nx.read_gml(path)
 
 start_time = time.time()
 bg = myBigclam(nxg=g, dim_size=128)
-F = bg.run(starting_alpha=0.001, num_of_iterations=10000)
+F = bg.run(starting_alpha=0.005, num_of_iterations=5000, datasetname=dataset)
 print("Running time: {}".format(round(time.time() - start_time, 4)))
 
 """
@@ -360,6 +394,6 @@ bg.plot(x=F)
 
 
 
-bg.save_f(filename="./outputs/citeseer_test.embedding")
+bg.save_f(filename="./outputs/"+dataset+"_test.embedding")
 
 

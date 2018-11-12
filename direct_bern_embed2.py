@@ -127,7 +127,7 @@ class myBigclam:
                         if nb_nb != v:
                             self._nb_list[v].append(nb_nb)
 
-		    self._nb_list[v].append(nb) # append one more time
+            self._nb_list[v].append(nb) # append one more time
 
     def _get_nb_strategy2_v3(self):
         self._nb_list = []
@@ -141,11 +141,11 @@ class myBigclam:
                     for nb_nb in self._edgelist[nb]:
                         if nb_nb != v and len(self._edgelist[v]) < 5:
                             self._nb_list[v].append(nb_nb)
-		    self._nb_list[v].append(nb) # append one more time
-		    #self._nb_list[v].append(nb)
+            self._nb_list[v].append(nb) # append one more time
+            #self._nb_list[v].append(nb)
 
 	    perm = np.random.permutation(len(self._nb_list[v]))
-	    self._nb_list[v] = [self._nb_list[v][p] for p in perm]
+        self._nb_list[v] = [self._nb_list[v][p] for p in perm]
 
     def _get_nb_strategy3(self):
         self._nb_list = []

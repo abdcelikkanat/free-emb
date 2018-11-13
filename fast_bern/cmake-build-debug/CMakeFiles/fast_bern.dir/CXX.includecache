@@ -6,10 +6,6 @@
 
 #IncludeRegexTransform: 
 
-/home/abdulkadir/Desktop/free-emb/fast_bern/Graph.cpp
-Graph.h
-/home/abdulkadir/Desktop/free-emb/fast_bern/Graph.h
-
 /home/abdulkadir/Desktop/free-emb/fast_bern/Graph.h
 iostream
 -
@@ -19,4 +15,36 @@ string
 -
 vector
 -
+
+/home/abdulkadir/Desktop/free-emb/fast_bern/Model.cpp
+Model.h
+/home/abdulkadir/Desktop/free-emb/fast_bern/Model.h
+
+/home/abdulkadir/Desktop/free-emb/fast_bern/Model.h
+Graph.h
+/home/abdulkadir/Desktop/free-emb/fast_bern/Graph.h
+vector
+-
+math.h
+/home/abdulkadir/Desktop/free-emb/fast_bern/math.h
+random
+-
+
+/home/abdulkadir/Desktop/free-emb/fast_bern/Unigram.h
+math.h
+-
+random
+-
+iostream
+-
+
+/home/abdulkadir/Desktop/free-emb/fast_bern/main.cpp
+iostream
+-
+Graph.h
+/home/abdulkadir/Desktop/free-emb/fast_bern/Graph.h
+Unigram.h
+/home/abdulkadir/Desktop/free-emb/fast_bern/Unigram.h
+Model.h
+/home/abdulkadir/Desktop/free-emb/fast_bern/Model.h
 

@@ -150,6 +150,60 @@ Graph.cpp.s:
 	$(MAKE) -f CMakeFiles/fast_bern.dir/build.make CMakeFiles/fast_bern.dir/Graph.cpp.s
 .PHONY : Graph.cpp.s
 
+Model.o: Model.cpp.o
+
+.PHONY : Model.o
+
+# target to build an object file
+Model.cpp.o:
+	$(MAKE) -f CMakeFiles/fast_bern.dir/build.make CMakeFiles/fast_bern.dir/Model.cpp.o
+.PHONY : Model.cpp.o
+
+Model.i: Model.cpp.i
+
+.PHONY : Model.i
+
+# target to preprocess a source file
+Model.cpp.i:
+	$(MAKE) -f CMakeFiles/fast_bern.dir/build.make CMakeFiles/fast_bern.dir/Model.cpp.i
+.PHONY : Model.cpp.i
+
+Model.s: Model.cpp.s
+
+.PHONY : Model.s
+
+# target to generate assembly for a file
+Model.cpp.s:
+	$(MAKE) -f CMakeFiles/fast_bern.dir/build.make CMakeFiles/fast_bern.dir/Model.cpp.s
+.PHONY : Model.cpp.s
+
+Unigram.o: Unigram.cpp.o
+
+.PHONY : Unigram.o
+
+# target to build an object file
+Unigram.cpp.o:
+	$(MAKE) -f CMakeFiles/fast_bern.dir/build.make CMakeFiles/fast_bern.dir/Unigram.cpp.o
+.PHONY : Unigram.cpp.o
+
+Unigram.i: Unigram.cpp.i
+
+.PHONY : Unigram.i
+
+# target to preprocess a source file
+Unigram.cpp.i:
+	$(MAKE) -f CMakeFiles/fast_bern.dir/build.make CMakeFiles/fast_bern.dir/Unigram.cpp.i
+.PHONY : Unigram.cpp.i
+
+Unigram.s: Unigram.cpp.s
+
+.PHONY : Unigram.s
+
+# target to generate assembly for a file
+Unigram.cpp.s:
+	$(MAKE) -f CMakeFiles/fast_bern.dir/build.make CMakeFiles/fast_bern.dir/Unigram.cpp.s
+.PHONY : Unigram.cpp.s
+
 main.o: main.cpp.o
 
 .PHONY : main.o
@@ -189,6 +243,12 @@ help:
 	@echo "... Graph.o"
 	@echo "... Graph.i"
 	@echo "... Graph.s"
+	@echo "... Model.o"
+	@echo "... Model.i"
+	@echo "... Model.s"
+	@echo "... Unigram.o"
+	@echo "... Unigram.i"
+	@echo "... Unigram.s"
 	@echo "... main.o"
 	@echo "... main.i"
 	@echo "... main.s"

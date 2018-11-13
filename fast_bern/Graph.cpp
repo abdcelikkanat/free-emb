@@ -9,7 +9,7 @@ Graph::Graph() {
 }
 
 Graph::~Graph() {
-    //delete [] adjlist;
+
 }
 
 
@@ -30,16 +30,19 @@ void Graph::readGraph(string file_path, string filetype, bool directed) {
 
     if( filetype == "edgelist" ) {
 
-        readEdgeList(file_path, directed);
+        readEdgeList(file_path);
+        // Convert edges into adjacent list
+        vector2Adjlist(directed);
 
     } else {
         cout << "Unknown file type!" << endl;
     }
 
 
+
 }
 
-void Graph::readEdgeList(string file_path, bool directed) {
+void Graph::readEdgeList(string file_path) {
 
     fstream fs(file_path, fstream::in);
     if(fs.is_open()) {
@@ -58,8 +61,7 @@ void Graph::readEdgeList(string file_path, bool directed) {
         fs.close();
 
         num_of_nodes = (unsigned int ) maxNodeId - minNodeId + 1; // Fix the minNodeId
-        // Convert edges into adjacent list
-        vector2Adjlist(directed);
+
 
     } else {
         cout << "An error occurred during reading file!" << endl;
@@ -93,5 +95,24 @@ void Graph::printAdjList() {
         }
         cout << endl;
     }
+
+}
+
+vector <vector <int>> Graph::getAdjList() {
+
+    return adjlist;
+
+}
+
+
+vector <unsigned int> Graph::getDegreeSequence() {
+
+    vector <unsigned int> degree_seq;
+    degree_seq.reserve(num_of_nodes);
+    for(unsigned int i=0; i<num_of_nodes; i++) {
+        degree_seq.at(i) = (unsigned int) adjlist[i].size();
+    }
+
+    return degree_seq;
 
 }

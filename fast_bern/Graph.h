@@ -20,15 +20,18 @@ private:
     vector <vector <int> > edges;
     vector < vector <int> > adjlist;
     bool directed = 0;
+    int *degree_seq;
 
     void vector2Adjlist(bool directed);
+
+
 
 public:
     Graph();
     ~Graph();
 
 
-    void readEdgeList(string file_path, bool directed);
+    void readEdgeList(string file_path);
 
     void readGraph(string file_path, string filetype, bool directed);
 
@@ -38,7 +41,11 @@ public:
 
     void getEdges();
 
-    void  printAdjList();
+    void printAdjList();
+
+    vector <unsigned int> getDegreeSequence();
+
+    vector <vector <int>> getAdjList();
 
 };
 

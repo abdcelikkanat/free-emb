@@ -90,6 +90,18 @@
 		<Unit filename="/home/abdulkadir/Desktop/free-emb/fast_bern/Graph.h">
 			<Option target="fast_bern"/>
 		</Unit>
+		<Unit filename="/home/abdulkadir/Desktop/free-emb/fast_bern/Model.cpp">
+			<Option target="fast_bern"/>
+		</Unit>
+		<Unit filename="/home/abdulkadir/Desktop/free-emb/fast_bern/Model.h">
+			<Option target="fast_bern"/>
+		</Unit>
+		<Unit filename="/home/abdulkadir/Desktop/free-emb/fast_bern/Unigram.cpp">
+			<Option target="fast_bern"/>
+		</Unit>
+		<Unit filename="/home/abdulkadir/Desktop/free-emb/fast_bern/Unigram.h">
+			<Option target="fast_bern"/>
+		</Unit>
 		<Unit filename="/home/abdulkadir/Desktop/free-emb/fast_bern/main.cpp">
 			<Option target="fast_bern"/>
 		</Unit>

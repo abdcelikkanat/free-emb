@@ -48,10 +48,10 @@ RM = /opt/clion-2018.2.5/bin/cmake/linux/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/abdulkadir/Desktop/fast_bern
+CMAKE_SOURCE_DIR = /home/abdulkadir/Desktop/free-emb/fast_bern
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/abdulkadir/Desktop/fast_bern/cmake-build-debug
+CMAKE_BINARY_DIR = /home/abdulkadir/Desktop/free-emb/fast_bern/cmake-build-debug
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -80,9 +80,9 @@ rebuild_cache/fast: rebuild_cache
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/abdulkadir/Desktop/fast_bern/cmake-build-debug/CMakeFiles /home/abdulkadir/Desktop/fast_bern/cmake-build-debug/CMakeFiles/progress.marks
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/abdulkadir/Desktop/free-emb/fast_bern/cmake-build-debug/CMakeFiles /home/abdulkadir/Desktop/free-emb/fast_bern/cmake-build-debug/CMakeFiles/progress.marks
 	$(MAKE) -f CMakeFiles/Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/abdulkadir/Desktop/fast_bern/cmake-build-debug/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/abdulkadir/Desktop/free-emb/fast_bern/cmake-build-debug/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
@@ -123,6 +123,33 @@ fast_bern/fast:
 	$(MAKE) -f CMakeFiles/fast_bern.dir/build.make CMakeFiles/fast_bern.dir/build
 .PHONY : fast_bern/fast
 
+Graph.o: Graph.cpp.o
+
+.PHONY : Graph.o
+
+# target to build an object file
+Graph.cpp.o:
+	$(MAKE) -f CMakeFiles/fast_bern.dir/build.make CMakeFiles/fast_bern.dir/Graph.cpp.o
+.PHONY : Graph.cpp.o
+
+Graph.i: Graph.cpp.i
+
+.PHONY : Graph.i
+
+# target to preprocess a source file
+Graph.cpp.i:
+	$(MAKE) -f CMakeFiles/fast_bern.dir/build.make CMakeFiles/fast_bern.dir/Graph.cpp.i
+.PHONY : Graph.cpp.i
+
+Graph.s: Graph.cpp.s
+
+.PHONY : Graph.s
+
+# target to generate assembly for a file
+Graph.cpp.s:
+	$(MAKE) -f CMakeFiles/fast_bern.dir/build.make CMakeFiles/fast_bern.dir/Graph.cpp.s
+.PHONY : Graph.cpp.s
+
 main.o: main.cpp.o
 
 .PHONY : main.o
@@ -159,6 +186,9 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... fast_bern"
+	@echo "... Graph.o"
+	@echo "... Graph.i"
+	@echo "... Graph.s"
 	@echo "... main.o"
 	@echo "... main.i"
 	@echo "... main.s"

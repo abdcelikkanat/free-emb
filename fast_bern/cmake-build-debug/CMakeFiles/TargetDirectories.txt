@@ -1,3 +1,3 @@
-/home/abdulkadir/Desktop/fast_bern/cmake-build-debug/CMakeFiles/edit_cache.dir
-/home/abdulkadir/Desktop/fast_bern/cmake-build-debug/CMakeFiles/rebuild_cache.dir
-/home/abdulkadir/Desktop/fast_bern/cmake-build-debug/CMakeFiles/fast_bern.dir
+/home/abdulkadir/Desktop/free-emb/fast_bern/cmake-build-debug/CMakeFiles/edit_cache.dir
+/home/abdulkadir/Desktop/free-emb/fast_bern/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+/home/abdulkadir/Desktop/free-emb/fast_bern/cmake-build-debug/CMakeFiles/fast_bern.dir

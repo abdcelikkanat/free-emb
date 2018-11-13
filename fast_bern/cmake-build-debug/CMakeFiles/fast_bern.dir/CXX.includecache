@@ -6,7 +6,11 @@
 
 #IncludeRegexTransform: 
 
-/home/abdulkadir/Desktop/fast_bern/main.cpp
+/home/abdulkadir/Desktop/free-emb/fast_bern/Graph.cpp
+Graph.h
+/home/abdulkadir/Desktop/free-emb/fast_bern/Graph.h
+
+/home/abdulkadir/Desktop/free-emb/fast_bern/Graph.h
 iostream
 -
 fstream

@@ -3,4 +3,4 @@ project(fast_bern)
 
 set(CMAKE_CXX_STANDARD 14)
 
-add_executable(fast_bern main.cpp)
+add_executable(fast_bern main.cpp Graph.cpp Graph.h)

@@ -1,5 +1,6 @@
 file(REMOVE_RECURSE
   "CMakeFiles/fast_bern.dir/main.cpp.o"
+  "CMakeFiles/fast_bern.dir/Graph.cpp.o"
   "fast_bern.pdb"
   "fast_bern"
 )

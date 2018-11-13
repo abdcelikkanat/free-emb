@@ -1,4 +1,4 @@
-# Install script for directory: /home/abdulkadir/Desktop/fast_bern
+# Install script for directory: /home/abdulkadir/Desktop/free-emb/fast_bern
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -45,5 +45,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/home/abdulkadir/Desktop/fast_bern/cmake-build-debug/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/home/abdulkadir/Desktop/free-emb/fast_bern/cmake-build-debug/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")

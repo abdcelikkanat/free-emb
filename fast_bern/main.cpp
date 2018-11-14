@@ -2,6 +2,8 @@
 #include "Graph.h"
 #include "Unigram.h"
 #include "Model.h"
+#include <string>
+#include <sstream>
 
 using namespace std;
 
@@ -10,50 +12,24 @@ using namespace std;
 
 int main() {
 
+    stringstream graph_path, embedding;
+    string dataset = "citeseer";
+
+    //graph_path << "/home/abdulkadir/Desktop/free-emb/fast_bern/" << dataset << ".edgelist";
+    graph_path << "./" << dataset << ".edgelist";
+
     Graph g;
-    g.readGraph("/home/abdulkadir/Desktop/free-emb/fast_bern/citeseer.edgelist", "edgelist", false);
-    int p = g.getNumOfNodes();
-    cout << "Nodes: " << p << endl;
+    g.readGraph(graph_path.str(), "edgelist", false);
 
-    //g.getEdges();
-    std::cout << "Hello, World!" << std::endl;
-
-    //g.printAdjList();
+    cout << "Number of nodes: " << g.getNumOfNodes() << endl;
+    cout << "Number of edges: " << g.getNumOfEdges() << endl;
 
 
-
-    /*
-
-    int size = 10;
-    int count = 5;
-    int samples[count] = {0};
-
-
-    int *freq = new int[size];
-    for(int i=0; i<size; i++) {
-        freq[i] = 1;
-    }
-
-
-    Unigram uni(size, freq, 0.75);
-
-
-    for(int j=0; j<100; j++) {
-        uni.sample(count, samples);
-        for (int i = 0; i < count; i++) {
-            cout << samples[i] << " ";
-        }
-        cout << endl;
-
-    delete []freq;
-    }
-    */
-    Model my(g, 1);
-    my.initialize();
+    Model model(g, 128);
+    model.run(0.005, 2000, 5, 25, dataset);
+    //model.save_embeddings("./blogcatalog.embedding");
 
 
 
-
-    /* */
     return 0;
 }

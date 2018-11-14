@@ -21,9 +21,11 @@ private:
 
     default_random_engine generator;
 
+
+
 public:
     Unigram();
-    Unigram(int size, int* freq, double expon);
+    Unigram(int size, vector<int> freq, double expon);
     ~Unigram();
 
     void sample(int count, int samples[]);

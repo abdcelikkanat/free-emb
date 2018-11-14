@@ -18,9 +18,8 @@ private:
     unsigned int num_of_nodes = 0;
     unsigned int num_of_edges = 0;
     vector <vector <int> > edges;
-    vector < vector <int> > adjlist;
+    vector <vector <int> > adjlist;
     bool directed = 0;
-    int *degree_seq;
 
     void vector2Adjlist(bool directed);
 
@@ -43,7 +42,7 @@ public:
 
     void printAdjList();
 
-    vector <unsigned int> getDegreeSequence();
+    vector <int> getDegreeSequence();
 
     vector <vector <int>> getAdjList();
 

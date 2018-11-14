@@ -62,7 +62,6 @@ void Graph::readEdgeList(string file_path) {
 
         num_of_nodes = (unsigned int ) maxNodeId - minNodeId + 1; // Fix the minNodeId
 
-
     } else {
         cout << "An error occurred during reading file!" << endl;
     }
@@ -76,7 +75,7 @@ unsigned int Graph::getNumOfNodes() {
 
 unsigned int Graph::getNumOfEdges() {
 
-    return num_of_nodes;
+    return num_of_edges;
 }
 
 void Graph::getEdges() {
@@ -105,13 +104,15 @@ vector <vector <int>> Graph::getAdjList() {
 }
 
 
-vector <unsigned int> Graph::getDegreeSequence() {
+vector <int> Graph::getDegreeSequence() {
 
-    vector <unsigned int> degree_seq;
-    degree_seq.reserve(num_of_nodes);
+    vector <int> degree_seq(num_of_nodes);
+    //degree_seq.resize(num_of_nodes);
     for(unsigned int i=0; i<num_of_nodes; i++) {
-        degree_seq.at(i) = (unsigned int) adjlist[i].size();
+        degree_seq[i] = (unsigned int) adjlist[i].size();
     }
+
+
 
     return degree_seq;
 

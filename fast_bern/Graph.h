@@ -9,6 +9,8 @@
 #include <fstream>
 #include <string>
 #include <vector>
+#include <algorithm>
+
 
 using namespace std;
 
@@ -29,6 +31,7 @@ public:
     Graph();
     ~Graph();
 
+    vector <int> getCommonNeighbours(int u, int v);
 
     void readEdgeList(string file_path);
 

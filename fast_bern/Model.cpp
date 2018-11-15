@@ -73,6 +73,35 @@ void Model::getNeighbors() {
 
 }
 
+
+void Model::getNeighbors_strategy1() {
+
+    nb_list.resize(num_of_nodes);
+
+    int nb, nb_nb;
+
+    for(int node=0; node<num_of_nodes; node++) {
+
+        for(int nb_inx=0; nb_inx<adj_list[node].size(); nb_inx++) {
+
+            nb = adj_list[node][nb_inx]; // Get 1-neighbor
+            nb_list[node].push_back(nb); // Set nb
+
+            for(int nb_nb_inx=0; nb_nb_inx<adj_list[nb].size(); nb_nb_inx++) {
+
+                nb_nb = adj_list[nb][nb_nb_inx]; // Get 2-neighbor
+                nb_list[node].push_back(nb_nb); // Set nb_nb
+                // ############
+                // Add one more time for each 2-neighbor
+                nb_list[node].push_back(nb);
+            }
+
+        }
+
+    }
+
+}
+
 double Model::sigmoid(double z) {
 
     if(z > 6)

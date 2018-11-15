@@ -13,6 +13,31 @@ Graph::~Graph() {
 }
 
 
+vector <int> Graph::getCommonNeighbours(int u, int v) {
+
+    vector <int> common_node_list;
+    int u_nb_inx= 0, v_nb_inx=0;
+
+    while(u_nb_inx<adjlist[u].size() && v_nb_inx<adjlist[v].size()) {
+        if (adjlist[u][u_nb_inx] < adjlist[v][v_nb_inx]) {
+
+            u_nb_inx++;
+
+        } else {
+
+            if(adjlist[u][u_nb_inx] == adjlist[v][v_nb_inx]) {
+                common_node_list.push_back(adjlist[u][u_nb_inx]);
+            }
+
+            v_nb_inx++;
+        }
+
+    }
+
+    return common_node_list;
+}
+
+
 void Graph::vector2Adjlist(bool directed) {
 
     adjlist.resize(num_of_nodes);
@@ -23,6 +48,10 @@ void Graph::vector2Adjlist(bool directed) {
             adjlist[edges[j][1]].push_back(edges[j][0]);
         }
     }
+
+    // Sort the nodes in the adjacency list
+    for(int i=0; i<num_of_nodes; i++)
+        sort(adjlist[i].begin(), adjlist[i].end());
 
 }
 

@@ -7,6 +7,7 @@ CMakeFiles/fast_bern.dir/Graph.cpp.o: ../Graph.h
 CMakeFiles/fast_bern.dir/Model.cpp.o: ../Graph.h
 CMakeFiles/fast_bern.dir/Model.cpp.o: ../Model.cpp
 CMakeFiles/fast_bern.dir/Model.cpp.o: ../Model.h
+CMakeFiles/fast_bern.dir/Model.cpp.o: ../Unigram.h
 
 CMakeFiles/fast_bern.dir/Unigram.cpp.o: ../Unigram.cpp
 CMakeFiles/fast_bern.dir/Unigram.cpp.o: ../Unigram.h

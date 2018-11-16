@@ -5,6 +5,36 @@
 #include "Model.h"
 
 
+template <typename A, typename B>
+void zip(
+        const std::vector<A> &a,
+        const std::vector<B> &b,
+        std::vector<std::pair<A,B>> &zipped)
+{
+    for(size_t i=0; i<a.size(); ++i)
+    {
+        zipped.push_back(std::make_pair(a[i], b[i]));
+    }
+}
+
+// Write the first and second element of the pairs in
+// the given zipped vector into a and b. (This assumes
+// that the vectors have equal length)
+template <typename A, typename B>
+void unzip(
+        const std::vector<std::pair<A, B>> &zipped,
+        std::vector<A> &a,
+        std::vector<B> &b)
+{
+    for(size_t i=0; i<a.size(); i++)
+    {
+        a[i] = zipped[i].first;
+        b[i] = zipped[i].second;
+    }
+}
+
+
+
 Model::Model(Graph graph, int dim) {
     g = graph;
     dim_size = dim;
@@ -47,6 +77,87 @@ void Model::readGraph(string file_path, string filetype, bool directed) {
 
 void Model::getNeighbors() {
 
+    int sample_size = 100;
+
+    nb_list.resize(num_of_nodes);
+
+    int nb, nb_nb, nb_nb_nb;
+
+    vector <int> candidates;
+    vector <int> counts;
+
+    for(int node=0; node<num_of_nodes; node++) {
+
+        for(int nb_inx=0; nb_inx<adj_list[node].size(); nb_inx++) {
+
+            nb = adj_list[node][nb_inx]; // Get 1-neighbor
+            nb_list[node].push_back(nb); // Set nb
+            candidates.push_back(nb);
+
+            for(int nb_nb_inx=0; nb_nb_inx<adj_list[nb].size(); nb_nb_inx++) {
+
+                nb_nb = adj_list[nb][nb_nb_inx]; // Get 2-neighbor
+                nb_list[node].push_back(nb_nb); // Set nb_nb
+                candidates.push_back(nb_nb);
+                // ############
+                // Add one more time for each 2-neighbor
+                nb_list[node].push_back(nb);
+
+
+                for(int nb_nb_nb_inx=0; nb_nb_nb_inx<adj_list[nb_nb].size(); nb_nb_nb_inx++) {
+
+                    nb_nb_nb = adj_list[nb_nb][nb_nb_inx];
+                    nb_list[node].push_back(nb_nb_nb);
+                    //nb_list[node].push_back(nb_nb);
+                    //nb_list[node].push_back(nb);
+
+                }
+
+            }
+
+        }
+        /*
+        int count = 0;
+        vector <pair <int, int>> temp_pair;
+        for(int i=0; i<candidates.size(); i++) {
+            count = (int)g.getCommonNeighbours(node, candidates[i]).size();
+            counts.push_back(count);
+        }
+        zip(candidates, counts, temp_pair);
+        sort(begin(temp_pair), end(temp_pair), [&](const auto& a, const auto& b) { return a.second > b.second; });
+        unzip(temp_pair, candidates, counts);
+
+        int adding_count=0;
+        default_random_engine generator;
+        discrete_distribution<int> node_distr(counts.begin(), counts.end());
+
+        while(adding_count < sample_size) {
+        */
+            /*
+            if(adding_count < candidates.size()) {
+                nb_list[node].push_back(candidates[adding_count]);
+            } else {
+                nb_list[node].push_back(candidates[node_distr(generator)]);
+            }
+             */
+        /*
+            nb_list[node].push_back(candidates[node_distr(generator)]);
+
+            adding_count++;
+
+        }
+
+        candidates.clear();
+        counts.clear();
+         */
+
+    }
+
+}
+
+/* YEDEK
+void Model::getNeighbors() {
+
     nb_list.resize(num_of_nodes);
 
     int nb, nb_nb;
@@ -73,34 +184,10 @@ void Model::getNeighbors() {
 
 }
 
+*/
 
-void Model::getNeighbors_strategy1() {
 
-    nb_list.resize(num_of_nodes);
 
-    int nb, nb_nb;
-
-    for(int node=0; node<num_of_nodes; node++) {
-
-        for(int nb_inx=0; nb_inx<adj_list[node].size(); nb_inx++) {
-
-            nb = adj_list[node][nb_inx]; // Get 1-neighbor
-            nb_list[node].push_back(nb); // Set nb
-
-            for(int nb_nb_inx=0; nb_nb_inx<adj_list[nb].size(); nb_nb_inx++) {
-
-                nb_nb = adj_list[nb][nb_nb_inx]; // Get 2-neighbor
-                nb_list[node].push_back(nb_nb); // Set nb_nb
-                // ############
-                // Add one more time for each 2-neighbor
-                nb_list[node].push_back(nb);
-            }
-
-        }
-
-    }
-
-}
 
 double Model::sigmoid(double z) {
 

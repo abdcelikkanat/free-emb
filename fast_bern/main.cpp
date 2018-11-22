@@ -13,7 +13,7 @@ using namespace std;
 int main() {
 
     stringstream graph_path, embedding;
-    string dataset = "citeseer";
+    string dataset = "blogcatalog";
 
     graph_path << "/home/abdulkadir/Desktop/free-emb/fast_bern/" << dataset << ".edgelist";
     //graph_path << "./" << dataset << ".edgelist";
@@ -26,7 +26,7 @@ int main() {
 
 
     Model model(g, 128);
-    model.run(0.005, 2000, 5, 100, dataset);
+    model.run(0.005, 1000, 5, 50, dataset);
     model.save_embeddings("./citeseer.embedding");
 
 

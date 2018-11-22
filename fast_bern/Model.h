@@ -12,6 +12,8 @@
 #include <sstream>
 #include "Unigram.h"
 #include "string.h"
+#include <chrono>
+#include <algorithm>
 
 using namespace std;
 

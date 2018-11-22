@@ -83,39 +83,93 @@ void Model::getNeighbors() {
 
     int nb, nb_nb, nb_nb_nb;
 
-    vector <int> candidates;
+    vector <int> nb_candidates, nb_nb_candidates;
     vector <int> counts;
+
+    // Get average node degree, max, min
+    int max_degree=0, min_degree=num_of_nodes;
+    float avg_degree=0;
+
+    for(int i=0; i<num_of_nodes; i++) {
+
+        avg_degree += (float)adj_list[i].size();
+
+        if(adj_list[i].size() > max_degree) {
+            max_degree = adj_list[i].size();
+        }
+
+        if(adj_list[i].size() < min_degree) {
+            min_degree = adj_list[i].size();
+        }
+    }
+
+    cout << "Max degree: " << max_degree << endl;
+    cout << "Min degree: " << min_degree << endl;
+    cout << "Avg degree: " << avg_degree/(float)num_of_nodes << endl;
 
     for(int node=0; node<num_of_nodes; node++) {
 
         for(int nb_inx=0; nb_inx<adj_list[node].size(); nb_inx++) {
 
             nb = adj_list[node][nb_inx]; // Get 1-neighbor
-            nb_list[node].push_back(nb); // Set nb
-            candidates.push_back(nb);
+            nb_candidates.push_back(nb);
 
+            vector <pair <int, int>> nb_temp_pair;
+            for(int i=0; i<nb_candidates.size(); i++) {
+                counts.push_back((int)adj_list[nb].size());
+            }
+            zip(nb_candidates, counts, nb_temp_pair);
+            sort(begin(nb_temp_pair), end(nb_temp_pair), [&](const auto& a, const auto& b) { return a.second < b.second; });
+            unzip(nb_temp_pair, nb_candidates, counts);
+
+            // Now add the nb list
+            for(int i=0; i<sample_size && i<nb_candidates.size(); i++)
+                nb_list[node].push_back(nb_candidates[i]); // Set nb
+
+            // For each nb_nb, apply the same procedure
             for(int nb_nb_inx=0; nb_nb_inx<adj_list[nb].size(); nb_nb_inx++) {
 
                 nb_nb = adj_list[nb][nb_nb_inx]; // Get 2-neighbor
-                nb_list[node].push_back(nb_nb); // Set nb_nb
-                candidates.push_back(nb_nb);
-                // ############
-                // Add one more time for each 2-neighbor
-                nb_list[node].push_back(nb);
-
-
+                if(adj_list[nb_nb].size() > 1000) {
+                    nb_list[node].push_back(nb_nb); // Set nb_nb
+                    //candidates.push_back(nb_nb);
+                    // ############
+                    // Add one more time for each 2-neighbor
+                    nb_list[node].push_back(nb);
+                }
+                /*
                 for(int nb_nb_nb_inx=0; nb_nb_nb_inx<adj_list[nb_nb].size(); nb_nb_nb_inx++) {
 
                     nb_nb_nb = adj_list[nb_nb][nb_nb_inx];
                     nb_list[node].push_back(nb_nb_nb);
                     //nb_list[node].push_back(nb_nb);
-                    //nb_list[node].push_back(nb);
+                    nb_list[node].push_back(nb);
 
                 }
+                */
 
             }
 
+
+
+
+
+
         }
+
+        /*
+        unsigned long int size = adj_list[node].size();
+
+        for(int i=0; i<size; i++) {
+            for(int j=0; j<adj_list[nb_list[node][i]].size(); j++)
+                nb_list[node].push_back(nb_list[node][i]);
+
+            unsigned seed = chrono::system_clock::now().time_since_epoch().count();
+            shuffle(nb_list[node].begin(), nb_list[node].end(), default_random_engine(seed) );
+
+        }
+        */
+
         /*
         int count = 0;
         vector <pair <int, int>> temp_pair;

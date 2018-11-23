@@ -107,52 +107,58 @@ void Model::getNeighbors() {
     cout << "Min degree: " << min_degree << endl;
     cout << "Avg degree: " << avg_degree/(float)num_of_nodes << endl;
 
+    vector <pair <int, int>> nb_temp_pair, nb_nb_temp_pair;
     for(int node=0; node<num_of_nodes; node++) {
 
+        nb_candidates.clear();
         for(int nb_inx=0; nb_inx<adj_list[node].size(); nb_inx++) {
-
             nb = adj_list[node][nb_inx]; // Get 1-neighbor
             nb_candidates.push_back(nb);
+        }
 
-            vector <pair <int, int>> nb_temp_pair;
-            for(int i=0; i<nb_candidates.size(); i++) {
-                counts.push_back((int)adj_list[nb].size());
-            }
-            zip(nb_candidates, counts, nb_temp_pair);
-            sort(begin(nb_temp_pair), end(nb_temp_pair), [&](const auto& a, const auto& b) { return a.second < b.second; });
-            unzip(nb_temp_pair, nb_candidates, counts);
 
-            // Now add the nb list
-            for(int i=0; i<sample_size && i<nb_candidates.size(); i++)
-                nb_list[node].push_back(nb_candidates[i]); // Set nb
+        counts.clear();
+        for(int nb_inx=0; nb_inx<nb_candidates.size(); nb_inx++) {
+            nb = nb_candidates[nb_inx];
+            counts.push_back((int)adj_list[nb].size());
+        }
 
+        nb_temp_pair.clear();
+
+        zip(nb_candidates, counts, nb_temp_pair);
+        sort(begin(nb_temp_pair), end(nb_temp_pair), [&](const auto& a, const auto& b) { return a.second < b.second; });
+        unzip(nb_temp_pair, nb_candidates, counts);
+
+        // Now add the nb list
+        for(int i=0; i<sample_size && i<nb_candidates.size(); i++) {
+            nb = nb_candidates[i];
+            nb_list[node].push_back(nb); // Set nb
+
+
+            nb_nb_candidates.clear();
             // For each nb_nb, apply the same procedure
             for(int nb_nb_inx=0; nb_nb_inx<adj_list[nb].size(); nb_nb_inx++) {
-
                 nb_nb = adj_list[nb][nb_nb_inx]; // Get 2-neighbor
-                if(adj_list[nb_nb].size() > 1000) {
-                    nb_list[node].push_back(nb_nb); // Set nb_nb
-                    //candidates.push_back(nb_nb);
-                    // ############
-                    // Add one more time for each 2-neighbor
-                    nb_list[node].push_back(nb);
-                }
-                /*
-                for(int nb_nb_nb_inx=0; nb_nb_nb_inx<adj_list[nb_nb].size(); nb_nb_nb_inx++) {
-
-                    nb_nb_nb = adj_list[nb_nb][nb_nb_inx];
-                    nb_list[node].push_back(nb_nb_nb);
-                    //nb_list[node].push_back(nb_nb);
-                    nb_list[node].push_back(nb);
-
-                }
-                */
-
+                nb_nb_candidates.push_back(nb_nb);
             }
 
+            counts.clear();
+            for(int nb_nb_inx=0; nb_nb_inx<nb_nb_candidates.size(); nb_nb_inx++) {
+                nb_nb = nb_nb_candidates[nb_nb_inx];
+                counts.push_back((int)adj_list[nb_nb].size());
+            }
+
+            nb_nb_temp_pair.clear();
+
+            zip(nb_nb_candidates, counts, nb_nb_temp_pair);
+            sort(begin(nb_nb_temp_pair), end(nb_nb_temp_pair), [&](const auto& a, const auto& b) { return a.second < b.second; });
+            unzip(nb_nb_temp_pair, nb_nb_candidates, counts);
 
 
-
+            for(int j=0; j<sample_size && j<nb_nb_candidates.size(); j++) {
+                nb_nb_nb = nb_nb_candidates[j];
+                nb_list[node].push_back(nb_nb_nb); // Set nb_nb
+            }
 
 
         }

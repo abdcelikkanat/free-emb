@@ -27,7 +27,7 @@ int main() {
 
     Model model(g, 128);
     model.run(0.005, 1000, 5, 50, dataset);
-    model.save_embeddings("./citeseer.embedding");
+    model.save_embeddings("./blogcatalog.embedding");
 
 
     return 0;

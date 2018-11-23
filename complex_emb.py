@@ -29,6 +29,35 @@ global_word_count=None
 vocab_size=None
 table= None
 
+
+def cart2polar(x):
+    z = np.zeros(shape=x.shape, dtype=np.float)
+
+    r = np.zeros(shape=x.shape[0], dtype=np.float)
+    for i in range(1, x.shape[1]):
+        r = r + x[:, i-1]**2
+        z[:, i-1] = np.arctan(x[:, i] / np.sqrt(r))
+
+    r = r + x[:, -1]**2
+    z[:, -1] = np.sqrt(r)
+    return z
+
+
+def polar2cart(z2):
+
+    z = np.asarray(z2)
+
+    x = np.zeros(shape=z.shape, dtype=np.float)
+
+    r = z[:, -1]
+    for i in range(x.shape[1]-1):
+        x[:, -i-1] = r*np.sin(z[:, -i-2])
+        r = r*np.cos(z[:, -i-2])
+    x[:, 0] = r
+
+    return x
+
+
 class VocabItem:
     def __init__(self, word):
         self.word = word
@@ -179,19 +208,17 @@ def ben_initialize():
     # Init syn0 with random numbers from a uniform distribution on the interval [-0.5, 0.5]/dim
 
     tmp = np.random.uniform(low=-0.5 / dim, high=0.5 / dim, size=(vocab_size, dim))
-    tmp_cplx_part = 1.0j * np.random.uniform(low=-0.5 / dim, high=0.5 / dim, size=(vocab_size, dim))
-    tmp = tmp + tmp_cplx_part
-    #syn0 = np.ctypeslib.as_ctypes(tmp)
-    #syn0 = Array(syn0._type_, syn0, lock=False)
-    syn0 = tmp
+    tmp[0] = np.random.exponential(scale=1.0, size=1)
+
+    tmp = cart2polar(tmp)
+
+    syn0 = np.ctypeslib.as_ctypes(tmp)
+    syn0 = Array(syn0._type_, syn0, lock=False)
 
     # Init syn1 with zeros
     tmp = np.zeros(shape=(vocab_size, dim))
-    tmp_cplx_part = 1.0j * np.zeros(shape=(vocab_size, dim))
-    tmp = tmp + tmp_cplx_part
-    #syn1 = np.ctypeslib.as_ctypes(tmp)
-    #syn1 = Array(syn1._type_, syn1, lock=False)
-    syn1 = tmp
+    syn1 = np.ctypeslib.as_ctypes(tmp)
+    syn1 = Array(syn1._type_, syn1, lock=False)
 
     return (syn0, syn1)
 
@@ -317,7 +344,7 @@ def ben_train_process(pid):
 
                 for context_word in context:
                     # Init neu1e with zeros
-                    neu1e = np.zeros(dim, dtype=np.complex)
+                    neu1e = np.zeros(dim)
 
                     # Compute neu1e and update syn1
                     if neg > 0:
@@ -325,14 +352,16 @@ def ben_train_process(pid):
                     else:
                         classifiers = zip(vocab[token].path, vocab[token].code)
                     for target, label in classifiers:
-                        z = np.dot(syn0[context_word]-syn1[target], syn0[context_word]-syn1[target])
-                        p = sigmoid(z)
-                        g = alpha * (label - p)
-                        neu1e += g * syn1[target]  # Error to backpropagate to syn0
-                        syn1[target] += g * syn0[context_word]  # Update syn1
+
+                        neu1e[-1] = -(2*label-1)*syn0[context_word][-1]
+                        neu1e[0:-1] += -(2*label-1)*1
+
+                        syn1[target][-1] = -(2*label-1)*syn1[target][-1]
+                        syn1[target][0:-1] = -(2*label-1)*1
 
                     # Update syn0
                     syn0[context_word] += neu1e
+
 
             word_count += 1
 
@@ -346,12 +375,14 @@ def ben_train_process(pid):
 
 
 def ben_save(vocab, syn0, fo):
+    tmp = polar2cart(syn0)
+
     print('Saving model to', fo)
-    dim = len(syn0[0])
+    dim = len(tmp[0])
 
     fo = open(fo, 'w')
-    fo.write('%d %d\n' % (len(syn0)-3, dim))
-    for token, vector in zip(vocab, np.conjugate(syn0)):
+    fo.write('%d %d\n' % (len(tmp)-3, dim))
+    for token, vector in zip(vocab, tmp):
         word = token.word
         if word not in ['<bol>', '<eol>', '<unk>']:
             vector_str = ' '.join([str(s) for s in vector])

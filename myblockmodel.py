@@ -24,10 +24,10 @@ deg_seq = np.sum(z, 1)
 #print(prod)
 #print(z)
 #print(deg_seq)
-456
-plt.figure()
-plt.hist(deg_seq, range=(min(deg_seq), max(deg_seq)), bins=[b for b in np.arange(min(deg_seq)-0.5, max(deg_seq)+1.5, 1)])
-plt.show()
+
+#plt.figure()
+#plt.hist(deg_seq, range=(min(deg_seq), max(deg_seq)), bins=[b for b in np.arange(min(deg_seq)-0.5, max(deg_seq)+1.5, 1)])
+#plt.show()
 
 g = nx.Graph()
 for i in range(z.shape[0]):
@@ -39,6 +39,6 @@ cc = nx.average_clustering(g)
 print("Average cc: {}".format(cc3))
 
 
-plt.figure()
-nx.draw(g)
-plt.show()
+#plt.figure()
+#nx.draw(g)
+#plt.show()

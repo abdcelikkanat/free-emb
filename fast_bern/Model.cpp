@@ -77,7 +77,7 @@ void Model::readGraph(string file_path, string filetype, bool directed) {
 
 void Model::getNeighbors() {
 
-    int sample_size = 100;
+    int sample_size = 33;
 
     nb_list.resize(num_of_nodes);
 

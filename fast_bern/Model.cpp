@@ -35,6 +35,8 @@ void unzip(
 
 
 
+
+
 Model::Model(Graph graph, int dim) {
     g = graph;
     dim_size = dim;
@@ -77,7 +79,7 @@ void Model::readGraph(string file_path, string filetype, bool directed) {
 
 void Model::getNeighbors() {
 
-    int sample_size = 100;
+    int sample_size = 32;
 
     nb_list.resize(num_of_nodes);
 
@@ -120,7 +122,8 @@ void Model::getNeighbors() {
         counts.clear();
         for(int nb_inx=0; nb_inx<nb_candidates.size(); nb_inx++) {
             nb = nb_candidates[nb_inx];
-            counts.push_back((int)adj_list[nb].size());
+            //counts.push_back((int)adj_list[nb].size());
+            counts.push_back((int)g.getClusteringCoefficient(node, nb));
         }
 
         nb_temp_pair.clear();
@@ -145,7 +148,8 @@ void Model::getNeighbors() {
             counts.clear();
             for(int nb_nb_inx=0; nb_nb_inx<nb_nb_candidates.size(); nb_nb_inx++) {
                 nb_nb = nb_nb_candidates[nb_nb_inx];
-                counts.push_back((int)adj_list[nb_nb].size());
+                //counts.push_back((int)adj_list[nb_nb].size());
+                counts.push_back((int)g.getClusteringCoefficient(node, nb_nb));
             }
 
             nb_nb_temp_pair.clear();

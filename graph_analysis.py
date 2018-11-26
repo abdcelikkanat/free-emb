@@ -31,8 +31,8 @@ def get_degree_sequence(g):
 
 # Buradan basliyor
 
-#graph_name = "blogcatalog.gml"
-graph_name = "cora_undirected.gml"
+graph_name = "blogcatalog.gml"
+#graph_name = "cora_undirected.gml"
 g = nx.read_gml(os.path.join("./datasets", graph_name))
 
 
@@ -69,7 +69,7 @@ for node in nodes:
     #print(community[node])
 ### end ####
 
-
+'''
 # Computes labels in neighbors
 total_estimation_success = 0
 for node in nodes:
@@ -103,7 +103,7 @@ for node in nodes:
 total_estimation_success = total_estimation_success / float(N)
 
 print("Success: %{}".format(total_estimation_success*100))
-
+'''
 
 '''   
 # Computes labels in triangles
@@ -144,7 +144,49 @@ total_estimation_success = total_estimation_success / float(N)
 print("Success: %{}".format(total_estimation_success*100))
 '''
 
+sample_size = 32
 
+# Computes labels in neighbors
+total_estimation_success = 0
+for node in nodes:
+    node_true_label_count = len(community[node])
+
+    label_counts = np.zeros(shape=(num_of_labels, ), dtype=np.int)
+
+    nb_list = list(nx.neighbors(g, node))
+    nb_cc = [nx.clustering(g, nodes=(node, nb)) for nb in nb_list]
+    nb_list = [x for _, x in sorted(zip(nb_cc, nb_list), key=lambda pair: pair[0])]
+
+
+    for nb in nb_list[:min(len(nb_list), sample_size)]:
+        nb_labels = community[nb]
+        for l in nb_labels:
+            label_counts[l] += 1
+
+        '''
+        for nb_nb in nx.neighbors(g, nb):
+            if nb_nb != node:
+                nb_nb_labels = community[nb_nb]
+                for l in nb_nb_labels:
+                    label_counts[l] += 1
+        '''
+
+    most_freq_labels = np.argsort(label_counts)[::-1][:node_true_label_count]
+
+    node_estimation_success = 0.0
+    for l in most_freq_labels:
+        if l in community[node]:
+            node_estimation_success += 1.0
+    node_estimation_success = node_estimation_success / node_true_label_count
+
+    total_estimation_success += node_estimation_success
+
+total_estimation_success = total_estimation_success / float(N)
+
+print("Success: %{}".format(total_estimation_success*100))
+
+
+'''
 # Computes labels fixed neighbors
 total_estimation_success = 0
 for node in nodes:
@@ -159,3 +201,5 @@ for node in nodes:
     print("List {} sorted: {}".format(nb_list, sorted_nb_deg_list))
 
 print("Success: %{}".format(total_estimation_success*100))
+
+'''

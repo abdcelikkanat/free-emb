@@ -49,6 +49,8 @@ public:
 
     vector <vector <int>> getAdjList();
 
+    double getClusteringCoefficient(int v, int u);
+
 };
 
 

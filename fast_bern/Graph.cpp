@@ -37,6 +37,38 @@ vector <int> Graph::getCommonNeighbours(int u, int v) {
     return common_node_list;
 }
 
+double Graph::getClusteringCoefficient(int v, int u) {
+
+    int u_nb_inx= 0, v_nb_inx=0;
+    double common_count = 0;
+
+    while(u_nb_inx<adjlist[u].size() && v_nb_inx<adjlist[v].size()) {
+        if (adjlist[u][u_nb_inx] < adjlist[v][v_nb_inx]) {
+
+            u_nb_inx++;
+
+        } else {
+
+            if(adjlist[u][u_nb_inx] == adjlist[v][v_nb_inx]) {
+                common_count += 1.0;
+            }
+
+            v_nb_inx++;
+        }
+
+    }
+
+    if(adjlist[v] > adjlist[u]) {
+
+        return common_count / (double)adjlist[u].size();
+
+    } else {
+
+        return common_count / (double)adjlist[v].size();
+    }
+
+}
+
 
 void Graph::vector2Adjlist(bool directed) {
 

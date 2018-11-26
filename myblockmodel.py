@@ -2,9 +2,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 import networkx as nx
 
-N = 10000
+N = 1000
 K = 50
-epsilon = 25
+epsilon = 15
 
 
 f = np.random.normal(size=(N, K))
@@ -32,11 +32,13 @@ deg_seq = np.sum(z, 1)
 g = nx.Graph()
 for i in range(z.shape[0]):
     for j in range(i+1, z.shape[0]):
-        g.add_edge(i, j)
+        if z[i, j]:
+            g.add_edge(i, j)
 
 cc = nx.average_clustering(g)
-
-print("Average cc: {}".format(cc3))
+sp = nx.average_shortest_path_length(g)
+print("Average cc: {}".format(cc))
+print("Average spl: {}".format(sp))
 
 
 #plt.figure()

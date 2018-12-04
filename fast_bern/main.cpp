@@ -13,7 +13,7 @@ using namespace std;
 int main() {
 
     stringstream graph_path, embedding;
-    string dataset = "citeseer";
+    string dataset = "cora_undirected";
 
     graph_path << "/home/abdulkadir/Desktop/free-emb/fast_bern/" << dataset << ".edgelist";
     //graph_path << "./" << dataset << ".edgelist";

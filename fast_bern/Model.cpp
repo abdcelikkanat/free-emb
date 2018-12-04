@@ -80,7 +80,8 @@ void Model::readGraph(string file_path, string filetype, bool directed) {
 
 void Model::getNeighbors() {
 
-    int sample_size = 64;
+    //int sample_size = 64;
+    int sample_size = 128;
 
     nb_list.resize(num_of_nodes);
 
@@ -122,12 +123,13 @@ void Model::getNeighbors() {
         for (int nb_inx = 0; nb_inx < nb_candidates.size(); nb_inx++) {
             nb = nb_candidates[nb_inx];
             //counts.push_back((int)adj_list[nb].size());
-            counts.push_back((int) g.getClusteringCoefficient(node, nb));
+            //counts.push_back((int) g.getClusteringCoefficient(node, nb));
+            counts.push_back((int) g.getCommonNeighbours(node, nb).size());
         }
         nb_temp_pair.clear();
 
         zip(nb_candidates, counts, nb_temp_pair);
-        sort(begin(nb_temp_pair), end(nb_temp_pair), [&](const auto &a, const auto &b) { return a.second > b.second; });
+        sort(begin(nb_temp_pair), end(nb_temp_pair), [&](const auto &a, const auto &b) { return a.second < b.second; });
         unzip(nb_temp_pair, nb_candidates, counts);
 
         // Now add the nb list
@@ -136,6 +138,20 @@ void Model::getNeighbors() {
             nb_list[node].push_back(nb); // Set nb
             nb_list[node].push_back(nb);
             nb_list[node].push_back(nb);
+
+            //nb_list[node].push_back(nb);
+            //nb_list[node].push_back(nb);
+            //nb_list[node].push_back(nb);
+            //nb_list[node].push_back(nb);
+            //nb_list[node].push_back(nb);
+            //nb_list[node].push_back(nb); // Set nb
+            //nb_list[node].push_back(nb);
+            //nb_list[node].push_back(nb);
+            //nb_list[node].push_back(nb);
+            //nb_list[node].push_back(nb);
+            //nb_list[node].push_back(nb);
+            //nb_list[node].push_back(nb);
+            //nb_list[node].push_back(nb);
 
             nb_nb_candidates.clear();
             // For each nb_nb, apply the same procedure
@@ -147,51 +163,52 @@ void Model::getNeighbors() {
             for (int nb_nb_inx = 0; nb_nb_inx < nb_nb_candidates.size(); nb_nb_inx++) {
                 nb_nb = nb_nb_candidates[nb_nb_inx];
                 //counts.push_back((int)adj_list[nb_nb].size());
-                counts.push_back((int) g.getClusteringCoefficient(node, nb_nb));
+                //counts.push_back((int) g.getClusteringCoefficient(node, nb_nb));
+                counts.push_back((int) g.getCommonNeighbours(node, nb_nb).size());
             }
             nb_nb_temp_pair.clear();
 
             zip(nb_nb_candidates, counts, nb_nb_temp_pair);
             sort(begin(nb_nb_temp_pair), end(nb_nb_temp_pair),
-                 [&](const auto &a, const auto &b) { return a.second > b.second; });
+                 [&](const auto &a, const auto &b) { return a.second < b.second; });
             unzip(nb_nb_temp_pair, nb_nb_candidates, counts);
 
 
             // Now add the nb list
             for (int k = 0; k < sample_size/1 && k < nb_nb_candidates.size(); k++) {
+                //nb_list[node].push_back(nb);
                 nb_nb = nb_nb_candidates[k];
                 nb_list[node].push_back(nb_nb); // Set nb
                 nb_list[node].push_back(nb_nb); // Set nb
                 nb_list[node].push_back(nb_nb); // Set nb
-                nb_list[node].push_back(nb_nb); // Set nb
-                nb_list[node].push_back(nb_nb); // Set nb
-                nb_list[node].push_back(nb_nb); // Set nb
-                /*
+                //nb_list[node].push_back(nb_nb); // Set nb
+                //nb_list[node].push_back(nb_nb); // Set nb
+                //nb_list[node].push_back(nb_nb); // Set nb
+
                 nb_nb_nb_candidates.clear();
                 // For each nb_nb, apply the same procedure
-                for (int nb_nb_nb_inx = 0; nb_nb_nb_inx < adj_list[nb_nb].size(); nb_nb_nb_inx++) {
-                    nb_nb_nb = adj_list[nb][nb_nb_nb_inx]; // Get 2-neighbor
+                for(int nb_nb_nb_inx = 0; nb_nb_nb_inx < adj_list[nb_nb].size(); nb_nb_nb_inx++) {
+                    nb_nb_nb = adj_list[nb_nb][nb_nb_nb_inx]; // Get 2-neighbor
                     nb_nb_nb_candidates.push_back(nb_nb_nb);
                 }
                 counts.clear();
-                for (int nb_nb_nb_inx = 0; nb_nb_nb_inx < nb_nb_nb_candidates.size(); nb_nb_nb_inx++) {
+                for(int nb_nb_nb_inx = 0; nb_nb_nb_inx < nb_nb_nb_candidates.size(); nb_nb_nb_inx++) {
                     nb_nb_nb = nb_nb_nb_candidates[nb_nb_nb_inx];
-                    //counts.push_back((int)adj_list[nb_nb].size());
-                    counts.push_back((int) g.getClusteringCoefficient(node, nb_nb_nb));
+                    counts.push_back((int) g.getCommonNeighbours(node, nb_nb_nb).size());
                 }
                 nb_nb_nb_temp_pair.clear();
-
                 zip(nb_nb_nb_candidates, counts, nb_nb_nb_temp_pair);
                 sort(begin(nb_nb_nb_temp_pair), end(nb_nb_nb_temp_pair),
-                     [&](const auto &a, const auto &b) { return a.second > b.second; });
+                     [&](const auto &a, const auto &b) { return a.second < b.second; });
                 unzip(nb_nb_nb_temp_pair, nb_nb_nb_candidates, counts);
 
-
-                for (int kk = 0; kk < sample_size/1 && kk < nb_nb_nb_candidates.size(); kk++) {
-                    nb_nb_nb_nb = nb_nb_nb_candidates[kk];
-                    nb_list[node].push_back(nb_nb_nb_nb); // Set nb_nb
+                for(int kk = 0; kk < sample_size/1 && kk < nb_nb_nb_candidates.size(); kk++) {
+                    nb_nb_nb = nb_nb_nb_candidates[kk];
+                    nb_list[node].push_back(nb_nb_nb); // Set nb_nb
+                    //nb_list[node].push_back(nb_nb_nb); // Set nb_nb
+                    //nb_list[node].push_back(nb_nb_nb); // Set nb_nb
                 }
-                 */
+                /* */
             }
 
         }

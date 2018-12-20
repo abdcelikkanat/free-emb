@@ -14,6 +14,7 @@ g.add_edges_from([[0, 1], [0, 2], [0, 3], [1, 2], [1, 3], [2, 3],
 #g = nx.read_gml("./datasets/karate.gml")
 g = nx.read_gml("./datasets/citeseer_undirected.gml")
 
+
 '''
 plt.figure()
 nx.draw(g)
@@ -72,7 +73,8 @@ node2comm = np.zeros(shape=(N, K), dtype=np.int)
 for node in range(N):
     node2comm[node, np.random.choice(K)] = 1
 
-alpha1 = 0.05
+
+alpha1 = 0.005
 alpha2 = 0.0002
 
 

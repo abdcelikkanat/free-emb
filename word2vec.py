@@ -218,7 +218,7 @@ def ben_train_process(pid):
                 last_word_count = word_count
 
                 # Recalculate alpha
-                alpha = starting_alpha * (1 - float(global_word_count.value) / vocab.word_count)
+                alpha = starti`ng_alpha * (1 - float(global_word_count.value) / vocab.word_count)
                 if alpha < starting_alpha * 0.0001: alpha = starting_alpha * 0.0001
 
                 # Print progress info

@@ -2,14 +2,14 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="006c3d7d-d506-4c99-b387-355c718ea988" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/c++/direct_bern_embed.cpp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/comm_detect_stoch_deneysel.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/my_sbm_model.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/comm_detect_categ_dirich.py" beforeDir="false" afterPath="$PROJECT_DIR$/comm_detect_categ_dirich.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/fast_bern/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/fast_bern/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/fast_bern/cmake-build-debug/CMakeFiles/fast_bern.dir/CXX.includecache" beforeDir="false" afterPath="$PROJECT_DIR$/fast_bern/cmake-build-debug/CMakeFiles/fast_bern.dir/CXX.includecache" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/fast_bern/cmake-build-debug/CMakeFiles/fast_bern.dir/Graph.cpp.o" beforeDir="false" afterPath="$PROJECT_DIR$/fast_bern/cmake-build-debug/CMakeFiles/fast_bern.dir/Graph.cpp.o" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/fast_bern/cmake-build-debug/CMakeFiles/fast_bern.dir/Model.cpp.o" beforeDir="false" afterPath="$PROJECT_DIR$/fast_bern/cmake-build-debug/CMakeFiles/fast_bern.dir/Model.cpp.o" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/fast_bern/cmake-build-debug/CMakeFiles/fast_bern.dir/main.cpp.o" beforeDir="false" afterPath="$PROJECT_DIR$/fast_bern/cmake-build-debug/CMakeFiles/fast_bern.dir/main.cpp.o" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/fast_bern/cmake-build-debug/fast_bern" beforeDir="false" afterPath="$PROJECT_DIR$/fast_bern/cmake-build-debug/fast_bern" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test1.py" beforeDir="false" afterPath="$PROJECT_DIR$/test1.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/complex_emb.py" beforeDir="false" afterPath="$PROJECT_DIR$/complex_emb.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/fast_bern/Model.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/fast_bern/Model.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/fast_bern/main.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/fast_bern/main.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/word2vec.py" beforeDir="false" afterPath="$PROJECT_DIR$/word2vec.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -80,13 +80,13 @@
       <usages-collector id="statistics.file.types.edit">
         <counts>
           <entry key="PLAIN_TEXT" value="1" />
-          <entry key="Python" value="11504" />
+          <entry key="Python" value="11506" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
           <entry key="dummy" value="1" />
-          <entry key="py" value="11504" />
+          <entry key="py" value="11506" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.vcs.git.usages" />
@@ -95,11 +95,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="225">
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/comm_detect_categ_dirich.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="255">
-              <caret line="22" selection-start-line="22" selection-end-line="28" selection-end-column="5" />
+            <state relative-caret-position="996">
+              <caret line="76" column="14" selection-start-line="76" selection-start-column="14" selection-end-line="76" selection-end-column="14" />
               <folding>
                 <element signature="e#0#21#0" expanded="true" />
               </folding>
@@ -107,11 +107,11 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/comm_detect_variational.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="210">
-              <caret line="14" lean-forward="true" selection-start-line="14" selection-end-line="14" />
+            <state relative-caret-position="435">
+              <caret line="29" column="40" selection-start-line="29" selection-start-column="40" selection-end-line="29" selection-end-column="40" />
               <folding>
                 <element signature="e#0#18#0" expanded="true" />
                 <marker date="1545258089963" expanded="true" signature="339:340" ph="..." />
@@ -246,8 +246,8 @@
         <option value="$PROJECT_DIR$/myblockmodel.py" />
         <option value="$PROJECT_DIR$/graph_analysis.py" />
         <option value="$PROJECT_DIR$/stoch_block_model.py" />
-        <option value="$PROJECT_DIR$/comm_detect_categ_dirich.py" />
         <option value="$PROJECT_DIR$/comm_detect_variational.py" />
+        <option value="$PROJECT_DIR$/comm_detect_categ_dirich.py" />
       </list>
     </option>
   </component>
@@ -451,7 +451,7 @@
     <frame x="43" y="21" width="1323" height="747" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.24357976" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.24357976" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
@@ -631,16 +631,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/comm_detect_categ_dirich.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="255">
-          <caret line="22" selection-start-line="22" selection-end-line="28" selection-end-column="5" />
-          <folding>
-            <element signature="e#0#21#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$USER_HOME$/.PyCharm2018.2/system/python_stubs/-1029412889/numpy/random/mtrand.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="4530">
@@ -715,12 +705,22 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/comm_detect_variational.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="210">
-          <caret line="14" lean-forward="true" selection-start-line="14" selection-end-line="14" />
+        <state relative-caret-position="435">
+          <caret line="29" column="40" selection-start-line="29" selection-start-column="40" selection-end-line="29" selection-end-column="40" />
           <folding>
             <element signature="e#0#18#0" expanded="true" />
             <marker date="1545258089963" expanded="true" signature="339:340" ph="..." />
             <marker date="1545258089963" expanded="true" signature="339:345" ph="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/comm_detect_categ_dirich.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="996">
+          <caret line="76" column="14" selection-start-line="76" selection-start-column="14" selection-end-line="76" selection-end-column="14" />
+          <folding>
+            <element signature="e#0#21#0" expanded="true" />
           </folding>
         </state>
       </provider>

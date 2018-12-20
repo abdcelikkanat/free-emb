@@ -24,3 +24,4 @@ for node in g.nodes():
 
 
 gn.get_neighbors(nb_list=nb_list, n=g.number_of_nodes(), l=3)
+

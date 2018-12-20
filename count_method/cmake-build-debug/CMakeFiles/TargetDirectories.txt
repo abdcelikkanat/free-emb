@@ -1,0 +1,3 @@
+/home/abdulkadir/Desktop/free-emb/count_method/cmake-build-debug/CMakeFiles/edit_cache.dir
+/home/abdulkadir/Desktop/free-emb/count_method/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+/home/abdulkadir/Desktop/free-emb/count_method/cmake-build-debug/CMakeFiles/fast_bern.dir

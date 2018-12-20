@@ -2,6 +2,9 @@ import networkx as nx
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.metrics.cluster import normalized_mutual_info_score
+import stoch_block_model
+import community
+
 
 g = nx.Graph()
 g.add_edges_from([[0, 1], [0, 2], [0, 3], [1, 2], [1, 3], [2, 3],
@@ -11,15 +14,22 @@ g.add_edges_from([[0, 1], [0, 2], [0, 3], [1, 2], [1, 3], [2, 3],
 #g = nx.read_gml("./datasets/karate.gml")
 g = nx.read_gml("./datasets/citeseer_undirected.gml")
 
+
 '''
 plt.figure()
 nx.draw(g)
 plt.show()
 '''
 
+sizes = [120, 180]
+matrix_p = [[0.85, 0.25],
+            [0.25, 0.75]]
+g = stoch_block_model.generate(sizes, matrix_p)
+
 N = g.number_of_nodes()
-K = 6
-num_of_iters = 100
+K = 2
+num_of_iters = 5000 #0.82, 0.78, 0.001, 0.006, 0.78, 0.002, 0.047
+
 
 # Initialize alpha_tilde
 alpha_tilde = np.ones(shape=(N, K), dtype=np.float) / float(K)
@@ -63,8 +73,8 @@ node2comm = np.zeros(shape=(N, K), dtype=np.int)
 for node in range(N):
     node2comm[node, np.random.choice(K)] = 1
 
-alpha1 = 3
-alpha2 = 2
+alpha1 = 0.005
+alpha2 = 0.0002
 
 
 print(np.argmax(node2comm, axis=1))
@@ -74,7 +84,7 @@ for iter in range(num_of_iters):
     prob = np.asarray([np.exp(alpha1*np.sum([node2comm[int(nb), z] for nb in nx.neighbors(g, node)]) +
                               alpha2*np.sum([node2comm[int(nb_nb), z] for nb_nb in nx.neighbors(g, nb) for nb in nx.neighbors(g, node) if nb_nb in nx.neighbors(g, node)]
                                             )) for z in range(K)])
-    prob = prob / np.sum(prob)
+    prob = np.exp(np.log(prob) - np.log(np.sum(prob)))
     k = np.random.choice(K, p=prob)
     node2comm[int(node), :] = np.zeros(shape=(K, ), dtype=np.int)
     node2comm[int(node), k] = 1
@@ -112,3 +122,11 @@ pred_labels = [found[node] for node in range(N)]
 nmi = normalized_mutual_info_score(correct_labels, pred_labels)
 
 print("NMI: {}".format(nmi))
+
+
+
+found2 = community.best_partition(graph=g)
+pred_labels = [found2[str(node)] for node in range(N)]
+nmi = normalized_mutual_info_score(correct_labels, pred_labels)
+
+print("Louvain NMI: {}".format(nmi))

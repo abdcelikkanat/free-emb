@@ -179,12 +179,12 @@ void Model::getNeighbors() {
                 //nb_list[node].push_back(nb);
                 nb_nb = nb_nb_candidates[k];
                 nb_list[node].push_back(nb_nb); // Set nb
-                nb_list[node].push_back(nb_nb); // Set nb
-                nb_list[node].push_back(nb_nb); // Set nb
                 //nb_list[node].push_back(nb_nb); // Set nb
                 //nb_list[node].push_back(nb_nb); // Set nb
                 //nb_list[node].push_back(nb_nb); // Set nb
-
+                //nb_list[node].push_back(nb_nb); // Set nb
+                //nb_list[node].push_back(nb_nb); // Set nb
+                /*
                 nb_nb_nb_candidates.clear();
                 // For each nb_nb, apply the same procedure
                 for(int nb_nb_nb_inx = 0; nb_nb_nb_inx < adj_list[nb_nb].size(); nb_nb_nb_inx++) {
@@ -208,7 +208,7 @@ void Model::getNeighbors() {
                     //nb_list[node].push_back(nb_nb_nb); // Set nb_nb
                     //nb_list[node].push_back(nb_nb_nb); // Set nb_nb
                 }
-                /* */
+                */
             }
 
         }
@@ -487,6 +487,8 @@ void Model::run(double starting_alpha, int num_of_iters, int negative, int save_
             for(int d=0; d<dim_size; d++)
                 emb0[node][d] += neule[d];
 
+
+            if
 
 
             delete [] samples;

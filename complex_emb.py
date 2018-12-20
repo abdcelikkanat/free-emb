@@ -353,11 +353,11 @@ def ben_train_process(pid):
                         classifiers = zip(vocab[token].path, vocab[token].code)
                     for target, label in classifiers:
 
-                        neu1e[-1] = -(2*label-1)*syn0[context_word][-1]
-                        neu1e[0:-1] += -(2*label-1)*1
+                        neu1e[-1] = -alpha*(2*label-1)*syn0[context_word][-1]
+                        neu1e[0:-1] += -alpha*(2*label-1)*1
 
-                        syn1[target][-1] = -(2*label-1)*syn1[target][-1]
-                        syn1[target][0:-1] = -(2*label-1)*1
+                        syn1[target][-1] = -alpha*(2*label-1)*syn1[target][-1]
+                        syn1[target][0:-1] = -alpha*(2*label-1)*1
 
                     # Update syn0
                     syn0[context_word] += neu1e
@@ -401,6 +401,7 @@ def __init_process(*args):
         warnings.simplefilter('ignore', RuntimeWarning)
         syn0 = np.ctypeslib.as_array(syn0_tmp)
         syn1 = np.ctypeslib.as_array(syn1_tmp)
+
 
 
 def ben_train():
@@ -453,7 +454,7 @@ if __name__ == '__main__':
     #cbow = None
     neg = 5
     dim = 128
-    starting_alpha = 0.025
+    starting_alpha = 0.0005 #0.025
     alpha = starting_alpha
     win = 10
     min_count = 0

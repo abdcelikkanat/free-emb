@@ -1,0 +1,1 @@
+/usr/bin/c++  -g   CMakeFiles/fast_bern.dir/main.cpp.o CMakeFiles/fast_bern.dir/Graph.cpp.o CMakeFiles/fast_bern.dir/Unigram.cpp.o CMakeFiles/fast_bern.dir/Model.cpp.o  -o fast_bern 

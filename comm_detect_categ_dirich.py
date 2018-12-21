@@ -73,6 +73,7 @@ node2comm = np.zeros(shape=(N, K), dtype=np.int)
 for node in range(N):
     node2comm[node, np.random.choice(K)] = 1
 
+
 alpha1 = 0.005
 alpha2 = 0.0002
 

@@ -1,9 +1,19 @@
+import community
+import networkx as nx
 import numpy as np
-import math
 
-a = np.asarray([2+1j, 3+2j])
-b = np.asarray([4+2j, 3+4j])
 
-a = np.dot(np.conjugate(a-b), a-b)
+g = nx.read_gml("./datasets/blogcatalog.gml")
+#g = nx.read_gml("./datasets/karate.gml")
 
-print(a)
+node2comm = community.best_partition(g)
+num_of_comms = max(node2comm.values()) + 1
+
+print(num_of_comms)
+
+counts = np.zeros(shape=(num_of_comms), dtype=np.float)
+
+for node in node2comm:
+    counts[int(node2comm[node])] += 1
+
+print(np.max(counts))

@@ -21,9 +21,9 @@ nx.draw(g)
 plt.show()
 '''
 
-sizes = [12, 18]
-matrix_p = [[0.85, 0.15],
-            [0.15, 0.75]]
+sizes = [120, 180]
+matrix_p = [[0.85, 0.45],
+            [0.45, 0.75]]
 g = stoch_block_model.generate(sizes, matrix_p)
 
 
@@ -46,22 +46,27 @@ def compute_prob(node, beta, g):
     return p
 
 
-def compute_beta(node, b0, beta, g):
+def compute_beta(b0, beta, g):
 
     b = np.exp(b0 - 1.0)
 
     return np.add(b, beta)
 
 # Initialize labels
-beta = np.random.dirichlet(alpha=[0.5, 0.5], size=(N, ))
-print("Init: ", np.argmax(beta, axis=1))
+found = np.zeros(shape=(N,), dtype=np.int)
+expId = 1
+while(np.sum(found)) == N or np.sum(found) == 0:
 
-for iter in range(num_of_iters):
-    for node in g.nodes():
-        beta[int(node), :] = compute_prob(node, beta, g)
+    beta = np.random.dirichlet(alpha=[0.5, 0.5], size=(N, ))
+    #print("Init: ", np.argmax(beta, axis=1))
+    print("Exp Id {}".format(expId))
+    expId += 1
+    for iter in range(num_of_iters):
+        for node in g.nodes():
+            beta[int(node), :] = compute_prob(node, beta, g)
 
 
-found = np.argmax(beta, axis=1)
+    found = np.argmax(beta, axis=1)
 print("last: ", np.argmax(beta, axis=1))
 
 
@@ -87,6 +92,7 @@ nx.draw_networkx_edges(g, pos,width=1.0, alpha=0.5)
 plt.show()
 
 
+'''
 
 
 gt_node2comm = nx.get_node_attributes(g, 'community')
@@ -105,4 +111,3 @@ nmi = normalized_mutual_info_score(correct_labels, pred_labels)
 
 print("Louvain NMI: {}".format(nmi))
 
-'''

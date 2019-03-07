@@ -218,7 +218,7 @@ def ben_train_process(pid):
                 last_word_count = word_count
 
                 # Recalculate alpha
-                alpha = starti`ng_alpha * (1 - float(global_word_count.value) / vocab.word_count)
+                alpha = starting_alpha * (1 - float(global_word_count.value) / vocab.word_count)
                 if alpha < starting_alpha * 0.0001: alpha = starting_alpha * 0.0001
 
                 # Print progress info
@@ -378,8 +378,10 @@ def ben_train():
 
 if __name__ == '__main__':
 
-    argsfi = "./inputs/citeseer_node2vec.corpus"
-    argsfo = "./outputs/citeseer_node2vec.embedding"
+    argsfi = "./citeseer_test.corpus"
+    argsfo = "./outputs/citeseer_test.embedding"
+    #argsfi = "./inputs/citeseer_node2vec.corpus"
+    #argsfo = "./outputs/citeseer_node2vec.embedding"
     argscbow = 0
     argsneg = 5
     argsdim = 128

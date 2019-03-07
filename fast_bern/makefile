@@ -1,6 +1,6 @@
 # compiler
-CC=g++ 
-CFLAGS=-c -Wall
+CC=g++
+CFLAGS=-c -Wall -std=c++11
 
 all: hello
 
@@ -13,11 +13,11 @@ main.o: main.cpp
 Graph.o: Graph.cpp
 	$(CC) $(CFLAGS) Graph.cpp
 
-hello.o: Model.cpp
+Model.o: Model.cpp
 	$(CC) $(CFLAGS) Model.cpp
 
-hello.o: Unigram.cpp
+Unigram.o: Unigram.cpp
 	$(CC) $(CFLAGS) Unigram.cpp
 
 clean:
-	rm *o hello
+	rm *.o hello

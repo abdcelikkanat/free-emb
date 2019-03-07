@@ -13,10 +13,10 @@ using namespace std;
 int main() {
 
     stringstream graph_path, embedding;
-    string dataset = "blogcatalog";
+    string dataset = "citeseer";
 
-    graph_path << "/home/abdulkadir/Desktop/free-emb/fast_bern/" << dataset << ".edgelist";
-    //graph_path << "./" << dataset << ".edgelist";
+    //graph_path << "/home/abdulkadir/Desktop/free-emb/fast_bern/" << dataset << ".edgelist";
+    graph_path << "./" << dataset << ".edgelist";
 
     Graph g;
     g.readGraph(graph_path.str(), "edgelist", false);
@@ -26,8 +26,11 @@ int main() {
 
 
     Model model(g, 128);
-    model.run(0.005, 250, 5, 10, dataset);
-    model.save_embeddings("./son.embedding");
+    //model.run(0.005, 250, 5, 10, dataset);
+    //embedding << "/home/abdulkadir/Desktop/free-emb/fast_bern/" << dataset << "_last.embedding";
+    embedding << "./" << dataset << "_last.embedding";
+    
+    model.save_embeddings(embedding.str());
 
 
     return 0;

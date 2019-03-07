@@ -3,17 +3,13 @@ import networkx as nx
 import numpy as np
 
 
-g = nx.read_gml("./datasets/blogcatalog.gml")
-#g = nx.read_gml("./datasets/karate.gml")
+say = 5
 
-node2comm = community.best_partition(g)
-num_of_comms = max(node2comm.values()) + 1
+def art(num):
 
-print(num_of_comms)
+    num += 3
 
-counts = np.zeros(shape=(num_of_comms), dtype=np.float)
 
-for node in node2comm:
-    counts[int(node2comm[node])] += 1
-
-print(np.max(counts))
+print(say)
+art(num=say)
+print(say)

@@ -38,6 +38,11 @@ public:
     void readGraph(string file_path, string filetype, bool directed);
     void run(double starting_alpha, int num_of_iters, int negative, int save_step, string save_file);
     void save_embeddings(string file_path);
+
+    void computeTriangles(vector <vector <int>> &triangles, vector <vector <int>> &triangle_counts);
+
+    void getNeighborNodes(vector <vector <int>> &nb_list, vector <vector <int>> &counts);
+    void nodeseq2degreeseq(vector <vector <int>> &nb_list, vector <vector <int>> &degree_seq);
 };
 
 
